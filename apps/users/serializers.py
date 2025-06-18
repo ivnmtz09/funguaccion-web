@@ -10,14 +10,16 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password')
+        fields = ('username', 'email', 'password', 'first_name', 'last_name')
 
     def create(self, validated_data):
         # Crear usuario
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email'),
-            password=validated_data['password']
+            password=validated_data['password'],
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', '')
         )
 
         # Asignar rol visitante por defecto
@@ -34,6 +36,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'id': self.user.id,
                 'username': self.user.username,
                 'email': self.user.email,
+                'first_name': self.user.first_name,
+                'last_name': self.user.last_name,
             }
         })
         return data
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['name', 'title', 'description']
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    roles = RoleSerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'roles']
+

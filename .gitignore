@@ -5,22 +5,22 @@ venv/
 # Archivos de base de datos
 *.sqlite3
 
-# Archivos Python temporales
+# Python temporales
 __pycache__/
 *.py[cod]
 *.log
 
-# Archivos del sistema
-.DS_Store
-Thumbs.db
-
-# Archivos generados
-*.pyc
-*.pyo
-
-# Archivos de VSCode
-.vscode/
-
-# Archivos de migraciones
+# Migraciones y bytecode
 **/migrations/__pycache__/
 **/migrations/*.pyc
+
+# VSCode
+.vscode/
+
+# Node & Frontend
+node_modules/
+dist/
+.fuguaccion-frontend/.next/
+funguaccion-frontend/node_modules/
+funguaccion-frontend/.env
+funguaccion-frontend/.DS_Store
