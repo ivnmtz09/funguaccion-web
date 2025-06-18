@@ -26,3 +26,15 @@ funguaccion-web/
 ├── .gitignore
 ├── README.md
 └── venv/
+
+## 🚀 Instrucciones
+
+### 🔧 Backend
+
+```bash
+cd funguaccion-web
+python -m venv venv
+source venv/Scripts/activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
