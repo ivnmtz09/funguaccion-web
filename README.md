@@ -1,21 +1,28 @@
-# Funguacción Web API
+# Funguacción Web
 
-Este es el backend de la Fundación Funguacción desarrollado con Django + DRF + JWT + MySQL.
+Sistema de gestión para la Fundación Funguacción con Django + MySQL + React.
 
-## Características
+## 🛠️ Tecnologías
 
-- Autenticación con JWT
-- Sistema de roles
-- Registro de usuarios
-- Subida de documentos
-- CRUD de contenido
-- API documentada con Swagger
+- Backend: Django, Django REST Framework, SimpleJWT, MySQL
+- Frontend: React, Vite, TailwindCSS
+- Autenticación con JWT (login, logout, registro)
+- Sistema de roles y permisos
+- Diseño moderno con Tailwind
 
-## Instalación local
+## 📁 Estructura
 
-1. Clona el repositorio
-2. Crea un entorno virtual
-3. Instala dependencias: `pip install -r requirements.txt`
-4. Crea un archivo `.env` con tus credenciales MySQL
-5. Ejecuta `python manage.py migrate`
-6. Corre el servidor con `python manage.py runserver`
+funguaccion-web/
+├── backend/
+├── apps/
+├── manage.py
+├── .env
+├── requirements.txt
+├── funguaccion-frontend/
+│ ├── src/
+│ ├── index.html
+│ ├── tailwind.config.js
+│ ├── ...
+├── .gitignore
+├── README.md
+└── venv/
