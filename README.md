@@ -10,23 +10,6 @@ Sistema de gestión para la Fundación Funguacción con Django + MySQL + React.
 - Sistema de roles y permisos
 - Diseño moderno con Tailwind
 
-## 📁 Estructura
-
-funguaccion-web/
-├── backend/
-├── apps/
-├── manage.py
-├── .env
-├── requirements.txt
-├── funguaccion-frontend/
-│ ├── src/
-│ ├── index.html
-│ ├── tailwind.config.js
-│ ├── ...
-├── .gitignore
-├── README.md
-└── venv/
-
 ## 🚀 Instrucciones
 
 ### 🔧 Backend
