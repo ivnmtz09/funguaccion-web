@@ -13,8 +13,6 @@ Sistema de gestión para la Fundación Funguacción con Django + MySQL + React.
 ## 🚀 Instrucciones
 
 ### 🔧 Backend
-
-```bash
 cd funguaccion-web
 python -m venv venv
 source venv/Scripts/activate
@@ -23,7 +21,6 @@ python manage.py migrate
 python manage.py runserver
 
 ### 💻 Frontend
-
 cd funguaccion-frontend
 npm install
 npm run dev
