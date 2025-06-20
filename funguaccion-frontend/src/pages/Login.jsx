@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import useAuth from '../context/useAuth';
 
@@ -10,70 +10,64 @@ function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
+    setLoading(true);
 
     try {
-      const response = await api.post('users/login/', { username, password });
-      const { access, refresh, user } = response.data;
+      const res = await api.post('users/login/', { username, password });
+      const { access, refresh, user } = res.data;
       login({ access, refresh, user });
       navigate('/me');
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Error al iniciar sesión';
-      console.error('Error:', msg);
-      setError(msg);
+      setError(err.response?.data?.detail || 'Credenciales incorrectas.');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="glass w-full max-w-md shadow-lg rounded-xl">
-        <div className="p-8">
-          <h2 className="gradient-text text-3xl font-bold text-center mb-6">Iniciar Sesión</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#f1f9f2] px-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border-t-4 border-green-500">
+        <h2 className="text-2xl font-bold text-green-700 text-center mb-6">Iniciar Sesión</h2>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-900/30 text-red-300 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
+        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="input-field"
-              required
-            />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+            required
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition"
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+        </form>
 
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-field"
-              required
-            />
-
-            <button type="submit" disabled={isLoading} className="btn-primary w-full">
-              {isLoading ? 'Procesando...' : 'Entrar'}
-            </button>
-          </form>
-
-          <div className="text-center text-sm text-gray-400 mt-4">
-            ¿No tienes cuenta?{' '}
-            <a href="/register" className="text-indigo-400 hover:underline">
-              Regístrate aquí
-            </a>
-          </div>
-        </div>
+        <p className="text-sm text-center text-gray-600 mt-4">
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Regístrate aquí
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -9,10 +9,12 @@ venv/
 __pycache__/
 *.py[cod]
 *.log
+*.pyc
 
 # Migraciones y bytecode
 **/migrations/__pycache__/
 **/migrations/*.pyc
+**/migrations/*.py
 
 # VSCode
 .vscode/
@@ -21,6 +23,11 @@ __pycache__/
 node_modules/
 dist/
 .fuguaccion-frontend/.next/
+funguaccion-frontend/dist/
 funguaccion-frontend/node_modules/
 funguaccion-frontend/.env
 funguaccion-frontend/.DS_Store
+
+# OS
+.DS_Store
+Thumbs.db
