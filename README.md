@@ -92,13 +92,13 @@ npm run dev
 
 ## 🔐 Variables de entorno
 
-Crear un archivo .env en el directorio funguaccion-web con:
-env
-
-SECRET_KEY=tu_clave_secreta_django
-DEBUG=True
-DB_NAME=funguaccion_db
-DB_USER=usuario_db
-DB_PASSWORD=contraseña_db
-DB_HOST=localhost
-JWT_EXPIRATION=86400  # 1 día en segundos
+    Crear un archivo .env en el directorio funguaccion-web con:
+    env
+    
+    SECRET_KEY=tu_clave_secreta_django
+    DEBUG=True
+    DB_NAME=funguaccion_db
+    DB_USER=usuario_db
+    DB_PASSWORD=contraseña_db
+    DB_HOST=localhost
+    JWT_EXPIRATION=86400  # 1 día en segundos
