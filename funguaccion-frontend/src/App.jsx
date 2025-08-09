@@ -1,24 +1,16 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import UserInfo from './pages/UserInfo';
-import useAuth from './context/useAuth';
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import UserInfo from "./pages/UserInfo";
 
-function App() {
-  const { isAuthenticated } = useAuth();
-
+export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={isAuthenticated ? '/me' : '/login'} />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route
-        path="/me"
-        element={isAuthenticated ? <UserInfo /> : <Navigate to="/login" />}
-      />
+      <Route path="/me" element={<UserInfo />} />
     </Routes>
   );
 }
-
-export default App;
