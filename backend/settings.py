@@ -161,3 +161,10 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+"""
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://pjpss7-ip-186-1-175-65.tunnelmole.net",  # <- Aquí tu dominio tunnelmole
+]
+"""

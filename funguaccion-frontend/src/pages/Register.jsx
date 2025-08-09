@@ -1,112 +1,63 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
+import logo from '../assets/logo.png';
 
-function Register() {
+export default function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
     username: '',
     email: '',
+    first_name: '',
+    last_name: '',
     password: '',
   });
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
     try {
-      const response = await api.post('users/register/', formData);
-      console.log('Usuario registrado:', response.data);
+      await api.post('users/register/', formData);
       navigate('/login');
-    } catch (err) {
-      const msg = err.response?.data?.detail || 'Error al registrar usuario';
-      console.error(msg);
-      setError(msg);
+    } catch {
+      alert('Error al registrarse');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-green-50">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md border-t-4 border-green-500">
-        <h2 className="text-2xl font-bold text-center text-green-700 mb-6">Registrarse</h2>
-
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="card w-full max-w-md p-6">
+        <img src={logo} alt="Logo Fundación" className="w-40 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-center text-green-900 mb-4">Crear cuenta</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="first_name"
-            type="text"
-            placeholder="Nombre"
-            value={formData.first_name}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
-          />
-
-          <input
-            name="last_name"
-            type="text"
-            placeholder="Apellidos"
-            value={formData.last_name}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
-          />
-
-          <input
-            name="username"
-            type="text"
-            placeholder="Nombre de usuario"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
-          />
-
-          <input
-            name="email"
-            type="email"
-            placeholder="Correo electrónico"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
-          />
-
-          <input
-            name="password"
-            type="password"
-            placeholder="Contraseña"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-green-600 text-white font-semibold py-2 rounded-lg hover:bg-green-700 transition"
-          >
-            Registrarme
-          </button>
+          <input name="username" type="text" placeholder="Usuario" className="input-field" onChange={handleChange} required />
+          <input name="email" type="email" placeholder="Correo electrónico" className="input-field" onChange={handleChange} required />
+          <input name="first_name" type="text" placeholder="Nombre" className="input-field" onChange={handleChange} required />
+          <input name="last_name" type="text" placeholder="Apellido" className="input-field" onChange={handleChange} required />
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Contraseña"
+              className="input-field pr-10"
+              onChange={handleChange}
+              required
+            />
+            <span
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? 'Ocultar' : 'Ver'}
+            </span>
+          </div>
+          <button type="submit" className="btn-primary w-full">Registrar</button>
         </form>
-
-        <p className="text-sm text-center text-gray-500 mt-4">
-          ¿Ya tienes una cuenta?{' '}
-          <Link to="/login" className="text-green-600 hover:underline">
-            Inicia sesión
-          </Link>
+        <p className="text-sm text-center mt-4">
+          ¿Ya tienes una cuenta? <Link to="/login" className="text-[#2cb84a] hover:underline">Inicia sesión</Link>
         </p>
       </div>
     </div>
   );
 }
-
-export default Register;

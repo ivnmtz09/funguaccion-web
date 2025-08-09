@@ -1,76 +1,66 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import useAuth from '../context/useAuth';
+import logo from '../assets/logo.png';
 
-function Login() {
-  const { login } = useAuth();
+export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
     try {
-      const res = await api.post('users/login/', { username, password });
-      const { access, refresh, user } = res.data;
-      login({ access, refresh, user });
+      const res = await api.post('users/login/', formData);
+      login(res.data);
       navigate('/me');
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Credenciales incorrectas.');
-    } finally {
-      setLoading(false);
+    } catch {
+      alert('Usuario o contraseña incorrectos');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f1f9f2] px-4">
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border-t-4 border-green-500">
-        <h2 className="text-2xl font-bold text-green-700 text-center mb-6">Iniciar Sesión</h2>
-
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="card w-full max-w-md p-6 relative">
+        <img src={logo} alt="Logo Fundación" className="w-40 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-center text-green-900 mb-4">Iniciar Sesión</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
+            name="username"
             type="text"
             placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="input-field"
+            value={formData.username}
+            onChange={handleChange}
             required
           />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition"
-          >
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Contraseña"
+              className="input-field pr-10"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <span
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? 'Ocultar' : 'Ver'}
+            </span>
+          </div>
+          <button type="submit" className="btn-primary w-full">Entrar</button>
         </form>
-
-        <p className="text-sm text-center text-gray-600 mt-4">
-          ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
-            Regístrate aquí
-          </Link>
+        <p className="text-sm text-center mt-4">
+          ¿No tienes cuenta? <Link to="/register" className="text-[#2cb84a] hover:underline">Regístrate aquí</Link>
         </p>
       </div>
     </div>
   );
 }
-
-export default Login;

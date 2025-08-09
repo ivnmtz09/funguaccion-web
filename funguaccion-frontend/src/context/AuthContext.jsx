@@ -14,18 +14,15 @@ export function AuthProvider({ children }) {
         setLoading(false);
         return;
       }
-
       try {
         const response = await api.get('users/me/');
         setUser(response.data);
-      } catch (err) {
-        console.error('Token inválido o expirado');
+      } catch {
         logout();
       } finally {
         setLoading(false);
       }
     };
-
     fetchMe();
   }, [accessToken]);
 
@@ -43,19 +40,12 @@ export function AuthProvider({ children }) {
     setAccessToken(null);
   };
 
-  const value = {
-    user,
-    accessToken,
-    isAuthenticated: !!user,
-    loading,
-    login,
-    logout,
-  };
+  const value = { user, accessToken, isAuthenticated: !!user, loading, login, logout };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
       </div>
     );
   }

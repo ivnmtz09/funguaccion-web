@@ -4,54 +4,30 @@
 
 @layer base {
   body {
-    @apply bg-[#f1fdf6] text-gray-900 font-sans antialiased min-h-screen;
+    @apply min-h-screen text-gray-900 font-sans antialiased;
+    background: linear-gradient(135deg, #e8f9f0, #f1fdf6);
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-[#2cb84a] hover:bg-[#28a243] text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-200;
+    @apply bg-[#2cb84a] hover:bg-[#28a243] text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-300;
   }
 
   .btn-danger {
-    @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow;
+    @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-300;
   }
 
   .input-field {
-    @apply w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2cb84a];
+    @apply w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2cb84a] transition duration-300;
   }
 
   .card {
     @apply bg-white rounded-xl shadow-lg border border-gray-200;
   }
-}
 
-@layer utilities {
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-}
-
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
+  .password-toggle {
+    @apply absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer hover:text-[#2cb84a] transition;
   }
 }
 
@@ -69,11 +45,4 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #1e7e34;
-}
-
-/* Glass effect opcional */
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
 }
