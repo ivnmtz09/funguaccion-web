@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Eye, EyeOff, CheckCircle, Shield } from "lucide-react"
+import { Eye, EyeOff, CheckCircle, Shield, ArrowLeft } from "lucide-react"
 import api from "../api"
 import logo from "../assets/logo.png"
 
@@ -60,21 +60,24 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 py-8">
+      
       {/* Elementos decorativos */}
       <div className="blob-decoration w-72 h-72 bg-green-300 top-10 -left-20"></div>
       <div className="blob-decoration w-72 h-72 bg-green-200 top-20 -right-20 animation-delay-2000"></div>
       <div className="blob-decoration w-72 h-72 bg-green-100 -bottom-10 left-20 animation-delay-4000"></div>
 
       <div className="card w-full max-w-lg relative z-10 animate-fade-in">
-        {/* Header */}
+        {/* Header mejorado */}
         <div className="text-center mb-8">
-          <img
-            src={logo || "/placeholder.svg"}
-            alt="Logo Fundación"
-            className="w-28 sm:w-32 mx-auto mb-4 animate-float"
-          />
-          <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">Crear Cuenta</h2>
-          <p className="text-gray-600 text-sm">Únete a la Fundación Guajira en Acción</p>
+          <Link to="/" className="inline-block hover:scale-105 transition-transform duration-300">
+            <img
+              src={logo || "/placeholder.svg"}
+              alt="Logo Fundación"
+              className="w-28 sm:w-32 mx-auto mb-4 animate-float drop-shadow-lg"
+            />
+          </Link>
+          <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">Únete a Nosotros</h2>
+          <p className="text-gray-600 text-sm">Crea tu cuenta y sé parte del cambio en La Guajira</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -177,7 +180,7 @@ export default function Register() {
           </button>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-center space-y-4">
           <p className="text-sm text-gray-600">
             ¿Ya tienes una cuenta?{" "}
             <Link
@@ -187,6 +190,16 @@ export default function Register() {
               Inicia sesión
             </Link>
           </p>
+
+          <div className="pt-4 border-t border-gray-200">
+            <Link
+              to="/"
+              className="text-green-700 hover:text-green-600 font-medium text-sm hover:underline transition-colors duration-200 flex items-center justify-center space-x-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Conocer más sobre la fundación</span>
+            </Link>
+          </div>
         </div>
 
         {/* Indicador de seguridad */}

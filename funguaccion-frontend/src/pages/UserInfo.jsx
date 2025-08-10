@@ -110,7 +110,10 @@ export default function UserInfo() {
                 <Home size={16} />
                 <span>Ir al inicio</span>
               </button>
-              <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2">
+              <button
+                onClick={() => navigate("/edit-profile")}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+              >
                 <Edit size={16} />
                 <span>Editar perfil</span>
               </button>

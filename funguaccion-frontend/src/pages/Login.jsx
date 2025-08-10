@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { Eye, EyeOff, Shield } from "lucide-react"
+import { Eye, EyeOff, Shield, ArrowLeft } from "lucide-react"
 import api from "../api"
 import useAuth from "../context/useAuth"
 import logo from "../assets/logo.png"
@@ -38,21 +38,24 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
+
       {/* Elementos decorativos */}
       <div className="blob-decoration w-72 h-72 bg-green-300 top-10 -left-20"></div>
       <div className="blob-decoration w-72 h-72 bg-green-200 top-20 -right-20 animation-delay-2000"></div>
       <div className="blob-decoration w-72 h-72 bg-green-100 -bottom-10 left-20 animation-delay-4000"></div>
 
       <div className="card w-full max-w-md relative z-10 animate-fade-in">
-        {/* Logo con animación */}
+        {/* Logo y título mejorados */}
         <div className="text-center mb-8">
-          <img
-            src={logo || "/placeholder.svg"}
-            alt="Logo Fundación"
-            className="w-32 sm:w-40 mx-auto mb-4 animate-float"
-          />
-          <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">Iniciar Sesión</h2>
-          <p className="text-gray-600 text-sm">Accede a tu cuenta de la Fundación</p>
+          <Link to="/" className="inline-block hover:scale-105 transition-transform duration-300">
+            <img
+              src={logo || "/placeholder.svg"}
+              alt="Logo Fundación"
+              className="w-32 sm:w-40 mx-auto mb-4 animate-float drop-shadow-lg"
+            />
+          </Link>
+          <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">Bienvenido de Nuevo</h2>
+          <p className="text-gray-600 text-sm">Accede a tu cuenta de la Fundación Guajira en Acción</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -119,7 +122,7 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-center space-y-4">
           <p className="text-sm text-gray-600">
             ¿No tienes cuenta?{" "}
             <Link
@@ -129,6 +132,16 @@ export default function Login() {
               Regístrate aquí
             </Link>
           </p>
+
+          <div className="pt-4 border-t border-gray-200">
+            <Link
+              to="/"
+              className="text-green-700 hover:text-green-600 font-medium text-sm hover:underline transition-colors duration-200 flex items-center justify-center space-x-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Explorar la fundación sin registrarse</span>
+            </Link>
+          </div>
         </div>
 
         {/* Indicador de seguridad */}
