@@ -80,14 +80,7 @@ pip install -r requirements.txt
 Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
 
 \`\`\`env
-SECRET_KEY=tu_clave_secreta
-DEBUG=True
-
-DB_NAME=funguaccion_db
-DB_USER=usuario_db
-DB_PASSWORD=contraseña_db
-DB_HOST=localhost
-DB_PORT=3306
+contenido en correo
 \`\`\`
 
 #### Ejecutar migraciones y servidor
