@@ -1,54 +1,100 @@
-import { createContext, useState, useEffect } from 'react';
-import api from '../api';
+"use client"
 
-export const AuthContext = createContext();
+import { createContext, useState, useEffect } from "react"
+import api from "../api"
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(localStorage.getItem('access'));
-  const [loading, setLoading] = useState(true);
+const AuthContext = createContext()
 
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  // Verificar si hay un usuario autenticado al cargar la app
   useEffect(() => {
-    const fetchMe = async () => {
-      if (!accessToken) {
-        setLoading(false);
-        return;
+    const checkAuth = async () => {
+      const access = localStorage.getItem("access")
+      if (access) {
+        try {
+          const response = await api.get("/users/me/")
+          setUser(response.data)
+        } catch (error) {
+          console.error("Error verificando autenticación:", error)
+          // Si hay error, limpiar tokens
+          localStorage.removeItem("access")
+          localStorage.removeItem("refresh")
+        }
       }
-      try {
-        const response = await api.get('users/me/');
-        setUser(response.data);
-      } catch {
-        logout();
-      } finally {
-        setLoading(false);
+      setLoading(false)
+    }
+
+    checkAuth()
+  }, [])
+
+  const login = async (email, password) => {
+    try {
+      const response = await api.post("/users/login/", {
+        email,
+        password,
+      })
+
+      const { access, refresh, user: userData } = response.data
+
+      // Guardar tokens
+      localStorage.setItem("access", access)
+      localStorage.setItem("refresh", refresh)
+
+      // Establecer usuario
+      setUser(userData)
+
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error("Error en login:", error)
+      return {
+        success: false,
+        error: error.response?.data?.detail || "Error al iniciar sesión",
       }
-    };
-    fetchMe();
-  }, [accessToken]);
-
-  const login = ({ access, refresh, user }) => {
-    localStorage.setItem('access', access);
-    localStorage.setItem('refresh', refresh);
-    setAccessToken(access);
-    setUser(user);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
-    setUser(null);
-    setAccessToken(null);
-  };
-
-  const value = { user, accessToken, isAuthenticated: !!user, loading, login, logout };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    );
+    }
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const register = async (userData) => {
+    try {
+      const response = await api.post("/users/register/", userData)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error("Error en registro:", error)
+      return {
+        success: false,
+        error: error.response?.data || "Error al registrarse",
+      }
+    }
+  }
+
+  const logout = async () => {
+    try {
+      const refresh = localStorage.getItem("refresh")
+      if (refresh) {
+        await api.post("/users/logout/", { refresh })
+      }
+    } catch (error) {
+      console.error("Error en logout:", error)
+    } finally {
+      // Limpiar tokens y usuario
+      localStorage.removeItem("access")
+      localStorage.removeItem("refresh")
+      setUser(null)
+    }
+  }
+
+  const value = {
+    user,
+    setUser,
+    loading,
+    login,
+    register,
+    logout,
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
+
+export default AuthContext

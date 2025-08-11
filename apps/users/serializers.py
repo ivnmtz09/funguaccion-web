@@ -71,14 +71,45 @@ class UserDetailSerializer(UserSerializer):
         fields = UserSerializer.Meta.fields + ['roles']
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
-    intereses = serializers.ListField(child=serializers.CharField(), required=False, allow_empty=True)
+    intereses = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    first_name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    last_name = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    email = serializers.EmailField(required=False, allow_blank=True, allow_null=True)
+    biografia = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    telefono = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    ubicacion = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'email', 'biografia', 'telefono', 'ubicacion', 'intereses']
 
     def to_internal_value(self, data):
-        # Convierte intereses a string si viene como lista
-        if 'intereses' in data and isinstance(data['intereses'], list):
-            data['intereses'] = ', '.join(data['intereses'])
-        return super().to_internal_value(data)
+        processed_data = data.copy()
+        
+        # Handle string fields - convert null to empty string
+        string_fields = ['first_name', 'last_name', 'email', 'biografia', 'telefono', 'ubicacion']
+        for field in string_fields:
+            if field in processed_data and processed_data[field] is None:
+                processed_data[field] = ''
+        
+        if 'intereses' in processed_data:
+            if processed_data['intereses'] is None:
+                processed_data['intereses'] = ''
+            elif isinstance(processed_data['intereses'], list):
+                # Filter out empty strings and join
+                clean_interests = [interest.strip() for interest in processed_data['intereses'] if interest and interest.strip()]
+                processed_data['intereses'] = ', '.join(clean_interests) if clean_interests else ''
+            elif not isinstance(processed_data['intereses'], str):
+                processed_data['intereses'] = str(processed_data['intereses'])
+        
+        return super().to_internal_value(processed_data)
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            if value == '' and getattr(instance._meta.get_field(field), 'null', False):
+                setattr(instance, field, None)
+            else:
+                setattr(instance, field, value)
+        
+        instance.save()
+        return instance

@@ -4,8 +4,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ArrowLeft, User, Save, Camera } from "lucide-react"
 import useAuth from "../context/useAuth.jsx"
-import logo from "../assets/logo.png"
-import api from "../api"
+import api from "../api.js"
 
 export default function EditProfile() {
   const { user, setUser } = useAuth()
@@ -13,6 +12,9 @@ export default function EditProfile() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [customLocation, setCustomLocation] = useState("")
+  const [showCustomLocation, setShowCustomLocation] = useState(false)
+
   const [formData, setFormData] = useState({
     first_name: user?.first_name || "",
     last_name: user?.last_name || "",
@@ -20,7 +22,7 @@ export default function EditProfile() {
     telefono: user?.telefono || "",
     biografia: user?.biografia || "",
     ubicacion: user?.ubicacion || "",
-    intereses: user?.intereses ? Array.isArray(user.intereses) ? user.intereses : user.intereses.split(", ") : [],
+    intereses: user?.intereses ? (Array.isArray(user.intereses) ? user.intereses : user.intereses.split(", ")) : [],
   })
 
   const interesesOpciones = [
@@ -36,44 +38,82 @@ export default function EditProfile() {
     "Inclusión",
     "Voluntariado",
     "Cultura",
-  ];
+  ]
 
-  const ubicacionesOpciones = [
-    "Riohacha",
-    "Maicao",
-    "Bogotá",
-    "Medellín",
-    "Barranquilla",
-    "Santa Marta",
-    "Valledupar",
-    "Cartagena",
-    "Cali",
-    "Otra",
-  ];
+  const ubicacionesOpciones = {
+    "La Guajira": [
+      "Albania",
+      "Barrancas",
+      "Dibulla",
+      "Distracción",
+      "El Molino",
+      "Fonseca",
+      "Hatonuevo",
+      "La Jagua del Pilar",
+      "Maicao",
+      "Manaure",
+      "Riohacha",
+      "San Juan del Cesar",
+      "Uribia",
+      "Urumita",
+      "Villanueva",
+    ],
+    Atlántico: ["Barranquilla", "Soledad", "Malambo", "Puerto Colombia", "Galapa"],
+    Magdalena: ["Santa Marta", "Ciénaga", "Fundación", "Aracataca", "El Banco"],
+    Cesar: ["Valledupar", "Aguachica", "Bosconia", "Codazzi", "La Paz"],
+    Bolívar: ["Cartagena", "Magangué", "Turbaco", "Arjona", "El Carmen de Bolívar"],
+    "Bogotá D.C.": ["Bogotá"],
+    Antioquia: ["Medellín", "Bello", "Itagüí", "Envigado", "Rionegro"],
+    "Valle del Cauca": ["Cali", "Palmira", "Buenaventura", "Tuluá", "Cartago"],
+    Cundinamarca: ["Soacha", "Chía", "Zipaquirá", "Facatativá", "Fusagasugá"],
+  }
 
   const handleChange = (e) => {
-    const { name, value, options, type } = e.target;
+    const { name, value, options, type } = e.target
     if (name === "intereses") {
       // Para select múltiple
       const selected = Array.from(options)
         .filter((opt) => opt.selected)
-        .map((opt) => opt.value);
-      setFormData({ ...formData, intereses: selected });
+        .map((opt) => opt.value)
+      setFormData({ ...formData, intereses: selected })
+    } else if (name === "ubicacion") {
+      if (value === "custom") {
+        setShowCustomLocation(true)
+        setFormData({ ...formData, ubicacion: "" })
+      } else {
+        setShowCustomLocation(false)
+        setCustomLocation("")
+        setFormData({ ...formData, [name]: value })
+      }
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData({ ...formData, [name]: value })
     }
   }
 
+  const handleCustomLocationChange = (e) => {
+    const value = e.target.value
+    setCustomLocation(value)
+    setFormData({ ...formData, ubicacion: value })
+  }
+
   const handleInteresClick = (interes) => {
-    let interesesActuales = formData.intereses;
-    if (typeof interesesActuales === "string") {
-      interesesActuales = interesesActuales.split(", ").filter(Boolean);
+    // Fixed interests handling to properly add/remove interests
+    let interesesActuales = Array.isArray(formData.intereses)
+      ? [...formData.intereses]
+      : typeof formData.intereses === "string"
+        ? formData.intereses.split(", ").filter(Boolean)
+        : []
+
+    if (interesesActuales.includes(interes)) {
+      // Remove if already selected
+      interesesActuales = interesesActuales.filter((i) => i !== interes)
+    } else {
+      // Add if not selected
+      interesesActuales.push(interes)
     }
-    if (!interesesActuales.includes(interes)) {
-      const nuevosIntereses = [...interesesActuales, interes];
-      setFormData({ ...formData, intereses: nuevosIntereses.join(", ") });
-    }
-  };
+
+    setFormData({ ...formData, intereses: interesesActuales })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -82,46 +122,85 @@ export default function EditProfile() {
     setSuccess("")
 
     try {
-      const access = localStorage.getItem("access")
-      // Enviar intereses como array
-      let interesesArray = formData.intereses;
-      if (typeof interesesArray === "string") {
-        interesesArray = interesesArray.split(",").map(i => i.trim()).filter(Boolean);
+      const cleanData = (value) => {
+        if (typeof value === "string") {
+          const trimmed = value.trim()
+          return trimmed === "" ? null : trimmed
+        }
+        return value === "" ? null : value
       }
-      // Si está vacío, enviar null
+
+      let interesesArray = []
+      if (Array.isArray(formData.intereses)) {
+        interesesArray = formData.intereses.filter((i) => i && i.trim())
+      } else if (typeof formData.intereses === "string" && formData.intereses.trim()) {
+        interesesArray = formData.intereses
+          .split(",")
+          .map((i) => i.trim())
+          .filter(Boolean)
+      }
+
       const payload = {
-        ...formData,
-        biografia: formData.biografia?.trim() ? formData.biografia : null,
-        telefono: formData.telefono?.trim() ? formData.telefono : null,
-        ubicacion: formData.ubicacion?.trim() ? formData.ubicacion : null,
-        intereses: interesesArray.length > 0 ? interesesArray : null,
-      };
-      const res = await api.put("/users/me/update/", payload, {
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      })
+        first_name: cleanData(formData.first_name),
+        last_name: cleanData(formData.last_name),
+        email: cleanData(formData.email),
+        biografia: cleanData(formData.biografia),
+        telefono: cleanData(formData.telefono),
+        ubicacion: cleanData(formData.ubicacion),
+        intereses: interesesArray, // Always send as array, even if empty
+      }
+
+      console.log("Sending payload:", payload) // Debug log
+
+      const res = await api.put("/users/me/update/", payload)
       setUser(res.data) // Actualiza el usuario en el contexto
       setSuccess("¡Cambios guardados exitosamente!")
       setTimeout(() => {
         navigate("/me")
       }, 1200)
     } catch (err) {
-      // Mostrar el mensaje real del backend si existe
-      let errorMsg = "No se pudo actualizar el perfil. Intenta de nuevo.";
+      // Enhanced error handling for different error types
+      let errorMsg = "No se pudo actualizar el perfil. Intenta de nuevo."
+
       if (err.response?.data) {
         if (typeof err.response.data === "string") {
-          errorMsg = err.response.data;
+          errorMsg = err.response.data
         } else if (err.response.data.detail) {
-          errorMsg = err.response.data.detail;
+          errorMsg = err.response.data.detail
+        } else if (err.response.data.non_field_errors) {
+          errorMsg = err.response.data.non_field_errors.join(" ")
         } else if (typeof err.response.data === "object") {
-          errorMsg = Object.values(err.response.data).join(" ");
+          // Handle field-specific errors
+          const fieldErrors = []
+          Object.entries(err.response.data).forEach(([field, errors]) => {
+            if (Array.isArray(errors)) {
+              fieldErrors.push(`${field}: ${errors.join(", ")}`)
+            } else {
+              fieldErrors.push(`${field}: ${errors}`)
+            }
+          })
+          errorMsg = fieldErrors.length > 0 ? fieldErrors.join("; ") : errorMsg
         }
+      } else if (err.message) {
+        errorMsg = err.message
       }
-      setError(errorMsg);
+
+      setError(errorMsg)
+      console.error("Error updating profile:", err)
+      console.error("Error response:", err.response?.data) // Debug log
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Fixed interests display logic
+  const isInteresSelected = (interes) => {
+    const currentIntereses = Array.isArray(formData.intereses)
+      ? formData.intereses
+      : typeof formData.intereses === "string"
+        ? formData.intereses.split(", ").filter(Boolean)
+        : []
+    return currentIntereses.includes(interes)
   }
 
   return (
@@ -137,7 +216,7 @@ export default function EditProfile() {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Volver al perfil</span>
             </Link>
-            <img src={logo || "/placeholder.svg"} alt="Logo Fundación" className="h-10 object-contain" />
+            <img src="/placeholder-56k2i.png" alt="Logo Fundación" className="h-10 object-contain" />
           </div>
         </div>
       </header>
@@ -237,15 +316,38 @@ export default function EditProfile() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Ubicación</label>
                     <select
                       name="ubicacion"
-                      value={formData.ubicacion}
+                      value={showCustomLocation ? "custom" : formData.ubicacion}
                       onChange={handleChange}
                       className="input-field"
                     >
-                      <option value="">Selecciona tu ciudad</option>
-                      {ubicacionesOpciones.map((ciudad) => (
-                        <option key={ciudad} value={ciudad}>{ciudad}</option>
+                      <option value="">Selecciona tu municipio</option>
+                      {Object.entries(ubicacionesOpciones).map(([departamento, municipios]) => (
+                        <optgroup key={departamento} label={departamento}>
+                          {municipios.map((municipio) => (
+                            <option key={municipio} value={municipio}>
+                              {municipio}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
+                      <option value="custom">✏️ Escribir municipio manualmente</option>
                     </select>
+
+                    {showCustomLocation && (
+                      <div className="mt-2">
+                        <input
+                          type="text"
+                          value={customLocation}
+                          onChange={handleCustomLocationChange}
+                          className="input-field"
+                          placeholder="Escribe tu municipio"
+                          autoFocus
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Escribe el nombre de tu municipio si no aparece en la lista
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -270,7 +372,7 @@ export default function EditProfile() {
                     <input
                       type="text"
                       name="intereses"
-                      value={typeof formData.intereses === "string" ? formData.intereses : formData.intereses.join(", ")}
+                      value={Array.isArray(formData.intereses) ? formData.intereses.join(", ") : formData.intereses}
                       onChange={handleChange}
                       className="input-field"
                       placeholder="Ejemplo: Educación, Medio Ambiente, Música, etc."
@@ -280,14 +382,20 @@ export default function EditProfile() {
                         <button
                           type="button"
                           key={interes}
-                          className={`px-3 py-1 rounded-full text-sm border ${formData.intereses.includes(interes) ? "bg-green-600 text-white" : "bg-gray-100 text-green-700"}`}
+                          className={`px-3 py-1 rounded-full text-sm border transition-colors duration-200 ${
+                            isInteresSelected(interes)
+                              ? "bg-green-600 text-white border-green-600"
+                              : "bg-gray-100 text-green-700 border-gray-300 hover:bg-green-50"
+                          }`}
                           onClick={() => handleInteresClick(interes)}
                         >
                           {interes}
                         </button>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">Haz clic en los intereses recomendados para agregarlos automáticamente.</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Haz clic en los intereses recomendados para agregarlos o quitarlos.
+                    </p>
                   </div>
                 </div>
               </div>
