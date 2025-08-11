@@ -1,61 +1,72 @@
-import axios from 'axios';
+import axios from "axios"
+
+// Detecta si estás en localhost o en red local
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+
+// Si estás en localhost usa el backend local, si no, usa la IP de tu red
+const API_BASE = isLocalhost ? "http://localhost:8000" : "http://10.105.6.149:8000"
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: `${API_BASE}/api`,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-});
+})
 
 // Interceptor: añade el token a cada request
 api.interceptors.request.use((config) => {
-  const access = localStorage.getItem('access');
+  const access = localStorage.getItem("access")
   if (access) {
-    config.headers.Authorization = `Bearer ${access}`;
+    config.headers.Authorization = `Bearer ${access}`
   }
-  return config;
-});
+  return config
+})
 
 // Interceptor: refresh automático si el token expira
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config
 
     // Si es 401 y no se ha intentado aún
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const refresh = localStorage.getItem('refresh');
+      originalRequest._retry = true
+
+      const refresh = localStorage.getItem("refresh")
 
       if (!refresh) {
-        console.warn('No hay refresh token, cerrando sesión');
-        localStorage.removeItem('access');
-        localStorage.removeItem('refresh');
-        window.location.href = '/login';
-        return Promise.reject(error);
+        console.warn("No hay refresh token disponible")
+        // NO redirigir automáticamente, solo limpiar tokens
+        localStorage.removeItem("access")
+        localStorage.removeItem("refresh")
+        return Promise.reject(error)
       }
 
       try {
-        const response = await axios.post('http://localhost:8000/api/token/refresh/', {
-          refresh,
-        });
+        // Usar la misma API_BASE para refresh
+        const response = await axios.post(`${API_BASE}/api/token/refresh/`, { refresh })
+        const newAccess = response.data.access
 
-        const newAccess = response.data.access;
-        localStorage.setItem('access', newAccess);
+        // Actualizar el token
+        localStorage.setItem("access", newAccess)
+        originalRequest.headers.Authorization = `Bearer ${newAccess}`
 
-        originalRequest.headers.Authorization = `Bearer ${newAccess}`;
-        return api(originalRequest); // Reintenta la solicitud original
+        // Reintenta la solicitud original
+        return api(originalRequest)
       } catch (refreshError) {
-        console.error('Error al refrescar token:', refreshError);
-        localStorage.removeItem('access');
-        localStorage.removeItem('refresh');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+        console.error("Error al refrescar token:", refreshError)
+
+        // Limpiar tokens pero NO redirigir automáticamente
+        localStorage.removeItem("access")
+        localStorage.removeItem("refresh")
+
+        // Solo rechazar la promesa, la redirección la manejará el componente
+        return Promise.reject(refreshError)
       }
     }
 
-    return Promise.reject(error);
-  }
-);
+    return Promise.reject(error)
+  },
+)
 
-export default api;
+export default api

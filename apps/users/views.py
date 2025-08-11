@@ -1,4 +1,5 @@
 from rest_framework.generics import CreateAPIView
+from rest_framework import generics
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
@@ -6,11 +7,14 @@ from rest_framework import status, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
+from .models import CustomUser
 from .serializers import (
     RegisterSerializer,
     CustomTokenObtainPairSerializer,
     RoleSerializer,
     UserDetailSerializer,
+    UserSerializer,
+    UpdateProfileSerializer,
 )
 from django.contrib.auth import get_user_model, login, logout as django_logout
 from django.contrib.auth.models import update_last_login
@@ -115,3 +119,18 @@ class UserPermissionsView(APIView):
 
         return Response(permissions)
 
+class UpdateProfileView(generics.UpdateAPIView):
+    serializer_class = UpdateProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    # Ejemplo de función para actualizar perfil
+    # Esta función debe implementarse en el frontend (JavaScript), no en la vista de Django.
+
+    # Ejemplo en tu función login
+    # const { access, refresh, user } = response.data;
+    # localStorage.setItem("access", access);
+    # localStorage.setItem("refresh", refresh);
+    # setUser(user); // user debe tener todos los campos extra y roles

@@ -7,6 +7,7 @@ from .views import (
     UserMeView,
     UserViewSet,
     UserPermissionsView,
+    UpdateProfileView,
 )
 
 router = DefaultRouter()
@@ -19,4 +20,5 @@ urlpatterns = [
     path('me/', UserMeView.as_view(), name='user_me'),
     path('', include(router.urls)),
     path('me/permissions/', UserPermissionsView.as_view(), name='user_permissions'),
+    path('me/update/', UpdateProfileView.as_view(), name='update_profile'),
 ]

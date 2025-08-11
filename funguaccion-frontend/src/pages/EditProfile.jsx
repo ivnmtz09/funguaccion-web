@@ -3,40 +3,125 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ArrowLeft, User, Save, Camera } from "lucide-react"
-import useAuth from "../context/useAuth"
+import useAuth from "../context/useAuth.jsx"
 import logo from "../assets/logo.png"
+import api from "../api"
 
 export default function EditProfile() {
-  const { user } = useAuth()
+  const { user, setUser } = useAuth()
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
   const [formData, setFormData] = useState({
     first_name: user?.first_name || "",
     last_name: user?.last_name || "",
     email: user?.email || "",
-    phone: "",
-    bio: "",
-    location: "",
-    interests: "",
+    telefono: user?.telefono || "",
+    biografia: user?.biografia || "",
+    ubicacion: user?.ubicacion || "",
+    intereses: user?.intereses ? Array.isArray(user.intereses) ? user.intereses : user.intereses.split(", ") : [],
   })
 
+  const interesesOpciones = [
+    "Educación",
+    "Medio Ambiente",
+    "Música",
+    "Tecnología",
+    "Salud",
+    "Emprendimiento",
+    "Innovación",
+    "Arte",
+    "Deporte",
+    "Inclusión",
+    "Voluntariado",
+    "Cultura",
+  ];
+
+  const ubicacionesOpciones = [
+    "Riohacha",
+    "Maicao",
+    "Bogotá",
+    "Medellín",
+    "Barranquilla",
+    "Santa Marta",
+    "Valledupar",
+    "Cartagena",
+    "Cali",
+    "Otra",
+  ];
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+    const { name, value, options, type } = e.target;
+    if (name === "intereses") {
+      // Para select múltiple
+      const selected = Array.from(options)
+        .filter((opt) => opt.selected)
+        .map((opt) => opt.value);
+      setFormData({ ...formData, intereses: selected });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   }
+
+  const handleInteresClick = (interes) => {
+    let interesesActuales = formData.intereses;
+    if (typeof interesesActuales === "string") {
+      interesesActuales = interesesActuales.split(", ").filter(Boolean);
+    }
+    if (!interesesActuales.includes(interes)) {
+      const nuevosIntereses = [...interesesActuales, interes];
+      setFormData({ ...formData, intereses: nuevosIntereses.join(", ") });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
+    setSuccess("")
 
-    // Simular actualización del perfil
-    setTimeout(() => {
-      alert("¡Perfil actualizado exitosamente!")
+    try {
+      const access = localStorage.getItem("access")
+      // Enviar intereses como array
+      let interesesArray = formData.intereses;
+      if (typeof interesesArray === "string") {
+        interesesArray = interesesArray.split(",").map(i => i.trim()).filter(Boolean);
+      }
+      // Si está vacío, enviar null
+      const payload = {
+        ...formData,
+        biografia: formData.biografia?.trim() ? formData.biografia : null,
+        telefono: formData.telefono?.trim() ? formData.telefono : null,
+        ubicacion: formData.ubicacion?.trim() ? formData.ubicacion : null,
+        intereses: interesesArray.length > 0 ? interesesArray : null,
+      };
+      const res = await api.put("/users/me/update/", payload, {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      })
+      setUser(res.data) // Actualiza el usuario en el contexto
+      setSuccess("¡Cambios guardados exitosamente!")
+      setTimeout(() => {
+        navigate("/me")
+      }, 1200)
+    } catch (err) {
+      // Mostrar el mensaje real del backend si existe
+      let errorMsg = "No se pudo actualizar el perfil. Intenta de nuevo.";
+      if (err.response?.data) {
+        if (typeof err.response.data === "string") {
+          errorMsg = err.response.data;
+        } else if (err.response.data.detail) {
+          errorMsg = err.response.data.detail;
+        } else if (typeof err.response.data === "object") {
+          errorMsg = Object.values(err.response.data).join(" ");
+        }
+      }
+      setError(errorMsg);
+    } finally {
       setIsLoading(false)
-      navigate("/me")
-    }, 2000)
+    }
   }
 
   return (
@@ -80,6 +165,16 @@ export default function EditProfile() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm mb-4">
+                  {success}
+                </div>
+              )}
               {/* Información Personal */}
               <div>
                 <h2 className="text-lg font-semibold text-green-900 mb-4">Información Personal</h2>
@@ -131,8 +226,8 @@ export default function EditProfile() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
                     <input
                       type="tel"
-                      name="phone"
-                      value={formData.phone}
+                      name="telefono"
+                      value={formData.telefono}
                       onChange={handleChange}
                       className="input-field"
                       placeholder="Tu número de teléfono"
@@ -140,14 +235,17 @@ export default function EditProfile() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Ubicación</label>
-                    <input
-                      type="text"
-                      name="location"
-                      value={formData.location}
+                    <select
+                      name="ubicacion"
+                      value={formData.ubicacion}
                       onChange={handleChange}
                       className="input-field"
-                      placeholder="Ciudad, País"
-                    />
+                    >
+                      <option value="">Selecciona tu ciudad</option>
+                      {ubicacionesOpciones.map((ciudad) => (
+                        <option key={ciudad} value={ciudad}>{ciudad}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
@@ -159,8 +257,8 @@ export default function EditProfile() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Biografía</label>
                     <textarea
-                      name="bio"
-                      value={formData.bio}
+                      name="biografia"
+                      value={formData.biografia}
                       onChange={handleChange}
                       rows={4}
                       className="input-field resize-none"
@@ -171,12 +269,25 @@ export default function EditProfile() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">Intereses</label>
                     <input
                       type="text"
-                      name="interests"
-                      value={formData.interests}
+                      name="intereses"
+                      value={typeof formData.intereses === "string" ? formData.intereses : formData.intereses.join(", ")}
                       onChange={handleChange}
                       className="input-field"
-                      placeholder="Educación, Medio Ambiente, Música, etc."
+                      placeholder="Ejemplo: Educación, Medio Ambiente, Música, etc."
                     />
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {interesesOpciones.map((interes) => (
+                        <button
+                          type="button"
+                          key={interes}
+                          className={`px-3 py-1 rounded-full text-sm border ${formData.intereses.includes(interes) ? "bg-green-600 text-white" : "bg-gray-100 text-green-700"}`}
+                          onClick={() => handleInteresClick(interes)}
+                        >
+                          {interes}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">Haz clic en los intereses recomendados para agregarlos automáticamente.</p>
                   </div>
                 </div>
               </div>

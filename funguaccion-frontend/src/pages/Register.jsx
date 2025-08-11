@@ -60,7 +60,6 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 py-8">
-      
       {/* Elementos decorativos */}
       <div className="blob-decoration w-72 h-72 bg-green-300 top-10 -left-20"></div>
       <div className="blob-decoration w-72 h-72 bg-green-200 top-20 -right-20 animation-delay-2000"></div>
@@ -147,19 +146,19 @@ export default function Register() {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Crea una contraseña segura"
-                className="input-field pr-16"
+                className="input-field pr-12"
                 onChange={handleChange}
                 required
                 disabled={isLoading}
               />
               <button
                 type="button"
-                className="password-toggle flex items-center space-x-1"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-500 cursor-pointer transition-colors duration-200 p-2 rounded-full hover:bg-green-50"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={isLoading}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                <span>{showPassword ? "Ocultar" : "Ver"}</span>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>

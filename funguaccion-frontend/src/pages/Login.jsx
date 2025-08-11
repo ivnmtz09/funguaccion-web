@@ -1,19 +1,28 @@
 "use client"
 
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { Eye, EyeOff, Shield, ArrowLeft } from "lucide-react"
-import api from "../api"
-import useAuth from "../context/useAuth"
+import useAuth from "../context/useAuth.jsx"
 import logo from "../assets/logo.png"
 
 export default function Login() {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const location = useLocation()
+  const { login, user, isInitialized } = useAuth()
+
   const [formData, setFormData] = useState({ username: "", password: "" })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (isInitialized && user) {
+      const from = location.state?.from?.pathname || "/me"
+      navigate(from, { replace: true })
+    }
+  }, [user, isInitialized, navigate, location])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -26,19 +35,29 @@ export default function Login() {
     setError("")
 
     try {
-      const res = await api.post("users/login/", formData)
-      login(res.data)
-      navigate("/me")
-    } catch {
-      setError("Usuario o contraseña incorrectos")
+      const result = await login(formData)
+
+      if (result.success) {
+        // Redirigir a la página de origen o al perfil
+        const from = location.state?.from?.pathname || "/me"
+        navigate(from, { replace: true })
+      } else {
+        setError(result.error || "Usuario o contraseña incorrectos")
+      }
+    } catch (err) {
+      setError("Error de conexión. Intenta nuevamente.")
     } finally {
       setIsLoading(false)
     }
   }
 
+  // No renderizar si ya está autenticado (evita flash)
+  if (user) {
+    return null
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
-
       {/* Elementos decorativos */}
       <div className="blob-decoration w-72 h-72 bg-green-300 top-10 -left-20"></div>
       <div className="blob-decoration w-72 h-72 bg-green-200 top-20 -right-20 animation-delay-2000"></div>
@@ -87,7 +106,7 @@ export default function Login() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Ingresa tu contraseña"
-                  className="input-field pr-16"
+                  className="input-field pr-12"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -95,12 +114,12 @@ export default function Login() {
                 />
                 <button
                   type="button"
-                  className="password-toggle flex items-center space-x-1"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-500 cursor-pointer transition-colors duration-200 p-2 rounded-full hover:bg-green-50"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  <span>{showPassword ? "Ocultar" : "Ver"}</span>
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>

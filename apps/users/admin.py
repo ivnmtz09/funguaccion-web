@@ -16,6 +16,18 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('id',)
 
     fieldsets = UserAdmin.fieldsets + (
+        ('Información adicional', {
+            'fields': ('telefono', 'ubicacion', 'biografia', 'intereses'),
+        }),
+        ('Roles de usuario', {
+            'fields': ('roles',),
+        }),
+    )
+
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Información adicional', {
+            'fields': ('telefono', 'ubicacion', 'biografia', 'intereses'),
+        }),
         ('Roles de usuario', {
             'fields': ('roles',),
         }),

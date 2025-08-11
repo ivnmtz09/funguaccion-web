@@ -252,14 +252,30 @@ export default function Contacto() {
                 ))}
               </div>
 
-              {/* Mapa placeholder */}
+              {/* Mapa Google */}
               <div className="mt-8 card">
                 <h3 className="font-semibold text-green-900 mb-4">Nuestra Ubicación</h3>
                 <div className="bg-gray-200 h-48 rounded-lg flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <MapPin className="w-8 h-8 mx-auto mb-2" />
-                    <p className="text-sm">Mapa interactivo próximamente</p>
-                  </div>
+                  <iframe
+                    title="Mapa Fundación"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d397.9643938893956!2d-72.9075442!3d11.5449917!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e5e2f7e6e4b2e2d%3A0x7e8f8e8f8e8f8e8f!2sCalle%2021%20No.%207-61%2C%20Barrio%20Luis%20Eduardo%20Cuellar%2C%20La%20Guajira%2C%20Colombia!5e0!3m2!1ses!2sco!4v1717690000000!5m2!1ses!2sco"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0, minHeight: "192px", borderRadius: "0.5rem" }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+                <div className="text-center mt-2">
+                  <a
+                    href="https://maps.app.goo.gl/n86XxRdhdGYR8Eqs7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-green-600 hover:underline text-sm"
+                  >
+                    Ver en Google Maps
+                  </a>
                 </div>
               </div>
             </div>

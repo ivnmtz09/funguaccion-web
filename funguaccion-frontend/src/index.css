@@ -39,7 +39,15 @@
 
   /* Toggle de contraseña mejorado */
   .password-toggle {
-    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-500 cursor-pointer font-medium text-sm transition-colors duration-200 select-none flex items-center justify-center w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm border border-white/20;
+    @apply absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-500 cursor-pointer transition-all duration-200 p-2 rounded-full hover:bg-green-50 flex items-center justify-center;
+  }
+
+  .password-toggle:hover {
+    @apply scale-110;
+  }
+
+  .password-toggle:active {
+    @apply scale-95;
   }
 
   /* Enlaces del menú */
@@ -66,13 +74,42 @@
     @apply absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-600;
   }
 
-  /* Menú móvil */
+  /* Menú móvil mejorado */
   .mobile-menu {
-    @apply md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300;
+    @apply md:hidden fixed inset-0 z-50 transition-all duration-300;
+  }
+
+  .mobile-menu-overlay {
+    @apply absolute inset-0 bg-black/70 backdrop-blur-sm;
   }
 
   .mobile-menu-content {
-    @apply bg-white rounded-t-2xl p-6 absolute bottom-0 left-0 right-0 transform transition-transform duration-300;
+    @apply absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300;
+  }
+
+  .mobile-menu-header {
+    @apply p-6 border-b border-gray-200 bg-white relative;
+  }
+
+  .mobile-menu-close-btn {
+    @apply p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center;
+  }
+
+  .mobile-menu-nav {
+    @apply flex-1 overflow-y-auto bg-white;
+  }
+
+  .mobile-menu-footer {
+    @apply p-6 border-t border-gray-200 bg-white;
+  }
+
+  /* Botón del menú hamburguesa mejorado */
+  .menu-toggle-btn {
+    @apply md:hidden p-2 rounded-lg hover:bg-green-50 transition-all duration-200 relative z-50 flex items-center justify-center;
+  }
+
+  .menu-toggle-icon {
+    @apply w-6 h-6 text-green-800 transition-transform duration-300;
   }
 
   /* Estados de loading */

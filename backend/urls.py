@@ -18,7 +18,6 @@ urlpatterns = [
     # Apps
     path('api/users/', include('apps.users.urls')),
     path('api/foundation/', include('apps.foundation.urls')),
-
 ]
 
 if settings.DEBUG:

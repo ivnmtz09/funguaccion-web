@@ -24,12 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f&^wj^7r$n*y3p(48!&+prt+tzuigzwgdqv_1a@388=%wz_w@c'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '10.105.6.149'  # Tu IP local
+]
 
 
 # Application definition
@@ -161,10 +165,3 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-"""
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://pjpss7-ip-186-1-175-65.tunnelmole.net",  # <- Aquí tu dominio tunnelmole
-]
-"""

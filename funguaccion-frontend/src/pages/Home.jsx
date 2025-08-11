@@ -25,7 +25,7 @@ import {
   Settings,
   Bell,
 } from "lucide-react"
-import useAuth from "../context/useAuth"
+import useAuth from "../context/useAuth.jsx"
 import logo from "../assets/logo.png"
 
 export default function Home() {
@@ -272,25 +272,25 @@ export default function Home() {
 
         {/* Menú móvil optimizado */}
         <div
-          className={`md:hidden fixed inset-0 z-40 transition-all duration-300 ${
+          className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ${
             mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
         >
-          {/* Overlay */}
+          {/* Overlay completamente opaco */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={closeMobileMenu}
             aria-label="Cerrar menú"
           ></div>
 
-          {/* Contenido del menú */}
+          {/* Contenido del menú con fondo completamente opaco */}
           <div
             className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${
               mobileMenuOpen ? "translate-x-0" : "translate-x-full"
             }`}
           >
-            {/* Header del menú móvil */}
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100">
+            {/* Header del menú móvil con fondo sólido */}
+            <div className="p-6 border-b border-gray-200 bg-white relative">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <img src={logo || "/placeholder.svg"} alt="Logo" className="h-10 object-contain" />
@@ -299,19 +299,20 @@ export default function Home() {
                     <p className="text-xs text-green-700">en Acción</p>
                   </div>
                 </div>
+                {/* Botón de cierre mejorado */}
                 <button
                   onClick={closeMobileMenu}
-                  className="p-2 rounded-lg hover:bg-green-200 transition-colors duration-200"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center"
                   aria-label="Cerrar menú"
                 >
-                  <X className="w-5 h-5 text-green-800" />
+                  <X className="w-5 h-5 text-gray-600" />
                 </button>
               </div>
             </div>
 
-            {/* Información del usuario (si está logueado) */}
+            {/* Información del usuario con fondo sólido */}
             {user && (
-              <div className="p-6 border-b border-gray-200 bg-gray-50">
+              <div className="p-6 border-b border-gray-200 bg-white">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <User className="w-6 h-6 text-green-600" />
@@ -339,8 +340,8 @@ export default function Home() {
               </div>
             )}
 
-            {/* Enlaces de navegación */}
-            <div className="flex-1 overflow-y-auto">
+            {/* Enlaces de navegación con fondo sólido */}
+            <div className="flex-1 overflow-y-auto bg-white">
               <nav className="p-6 space-y-2">
                 <Link
                   to="/"
@@ -404,8 +405,8 @@ export default function Home() {
               </nav>
             </div>
 
-            {/* Footer del menú móvil */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50">
+            {/* Footer del menú móvil con fondo sólido */}
+            <div className="p-6 border-t border-gray-200 bg-white">
               {user ? (
                 <button
                   onClick={handleLogout}

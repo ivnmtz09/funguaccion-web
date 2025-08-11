@@ -1,8 +1,8 @@
 "use client"
 
 import { useNavigate } from "react-router-dom"
-import { LogOut, User, UserCheck, AlertTriangle, Home, Edit } from "lucide-react"
-import useAuth from "../context/useAuth"
+import { LogOut, User, UserCheck, AlertTriangle, Home, Edit, Phone, MapPin, BookOpen, Heart } from "lucide-react" // Nuevos iconos
+import useAuth from "../context/useAuth.jsx"
 import logo from "../assets/logo.png"
 
 export default function UserInfo() {
@@ -12,6 +12,17 @@ export default function UserInfo() {
   const handleLogout = () => {
     logout()
     navigate("/login")
+  }
+
+  // Si el usuario no está cargado o no está autenticado, puedes mostrar un loading o redirigir
+  if (!user) {
+    // Esto debería ser manejado por ProtectedRoute, pero es una buena práctica defensiva
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading-spinner"></div>
+        <p className="ml-4 text-gray-600">Cargando información del usuario...</p>
+      </div>
+    )
   }
 
   return (
@@ -65,6 +76,44 @@ export default function UserInfo() {
                     <label className="text-sm font-medium text-gray-600">Correo electrónico</label>
                     <p className="text-lg font-semibold text-gray-900 mt-1">{user.email}</p>
                   </div>
+
+                  {/* Nuevos campos extra */}
+                  {user.telefono && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-center space-x-2">
+                      <Phone size={16} className="text-gray-500" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Teléfono</label>
+                        <p className="text-lg font-semibold text-gray-900 mt-1">{user.telefono}</p>
+                      </div>
+                    </div>
+                  )}
+                  {user.ubicacion && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-center space-x-2">
+                      <MapPin size={16} className="text-gray-500" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Ubicación</label>
+                        <p className="text-lg font-semibold text-gray-900 mt-1">{user.ubicacion}</p>
+                      </div>
+                    </div>
+                  )}
+                  {user.biografia && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-center space-x-2">
+                      <BookOpen size={16} className="text-gray-500" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Biografía</label>
+                        <p className="text-lg font-semibold text-gray-900 mt-1">{user.biografia}</p>
+                      </div>
+                    </div>
+                  )}
+                  {user.intereses && (
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-center space-x-2">
+                      <Heart size={16} className="text-gray-500" />
+                      <div>
+                        <label className="text-sm font-medium text-gray-600">Intereses</label>
+                        <p className="text-lg font-semibold text-gray-900 mt-1">{user.intereses}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
