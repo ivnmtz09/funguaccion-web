@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { ArrowLeft, User, Save, Camera } from "lucide-react"
+import { ArrowLeft, User, Save, Camera } from 'lucide-react'
 import useAuth from "../context/useAuth.jsx"
 import api from "../api.js"
+import logo from "../assets/logo.png"
 
 export default function EditProfile() {
   const { user, setUser } = useAuth()
@@ -152,8 +153,13 @@ export default function EditProfile() {
 
       console.log("Sending payload:", payload) // Debug log
 
+      // Actualizar el perfil
       const res = await api.put("/users/me/update/", payload)
-      setUser(res.data) // Actualiza el usuario en el contexto
+      
+      // CAMBIO PRINCIPAL: Obtener datos completos del usuario después de la actualización
+      const userResponse = await api.get("/users/me/")
+      setUser(userResponse.data) // Actualiza con datos completos incluyendo roles
+      
       setSuccess("¡Cambios guardados exitosamente!")
       setTimeout(() => {
         navigate("/me")
@@ -216,7 +222,7 @@ export default function EditProfile() {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Volver al perfil</span>
             </Link>
-            <img src="/placeholder-56k2i.png" alt="Logo Fundación" className="h-10 object-contain" />
+            <img src={logo || "/placeholder.svg"} alt="Logo Fundación" className="h-10 object-contain" />
           </div>
         </div>
       </header>

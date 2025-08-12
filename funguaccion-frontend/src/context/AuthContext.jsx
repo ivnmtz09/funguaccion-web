@@ -8,6 +8,8 @@ const AuthContext = createContext()
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isInitialized, setIsInitialized] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   // Verificar si hay un usuario autenticado al cargar la app
   useEffect(() => {
@@ -17,6 +19,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const response = await api.get("/users/me/")
           setUser(response.data)
+          setIsAuthenticated(true)
         } catch (error) {
           console.error("Error verificando autenticación:", error)
           // Si hay error, limpiar tokens
@@ -25,6 +28,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
       setLoading(false)
+      setIsInitialized(true)
     }
 
     checkAuth()
@@ -45,6 +49,7 @@ export const AuthProvider = ({ children }) => {
 
       // Establecer usuario
       setUser(userData)
+      setIsAuthenticated(true)
 
       return { success: true, data: response.data }
     } catch (error) {
@@ -82,16 +87,38 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem("access")
       localStorage.removeItem("refresh")
       setUser(null)
+      setIsAuthenticated(false)
+    }
+  }
+
+  const updateProfile = async (profileData) => {
+    try {
+      const access = localStorage.getItem("access")
+      const response = await api.put("/users/me/", profileData, {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
+      })
+      setUser(response.data)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error("Error en updateProfile:", error)
+      return {
+        success: false,
+        error: error.response?.data?.detail || "Error al actualizar el perfil",
+      }
     }
   }
 
   const value = {
     user,
     setUser,
-    loading,
     login,
-    register,
     logout,
+    updateProfile,
+    loading,
+    isInitialized,
+    isAuthenticated,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

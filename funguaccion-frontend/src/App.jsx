@@ -2,8 +2,8 @@
 
 import { Routes, Route } from "react-router-dom"
 import useAuth from "./context/useAuth.jsx"
-import LoadingScreen from "./pages/components/LoadingScreen.jsx" // <--- ¡Verifica esta línea!
-import ProtectedRoute from "./pages/components/ProtectedRoute.jsx"
+import LoadingScreen from "./components/LoadingScreen.jsx"
+import ProtectedRoute from "./components/ProtectedRoute.jsx"
 import Home from "./pages/Home.jsx"
 import Login from "./pages/Login.jsx"
 import Register from "./pages/Register.jsx"

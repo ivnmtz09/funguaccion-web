@@ -1,7 +1,7 @@
 "use client"
 
 import { Navigate, useLocation } from "react-router-dom"
-import useAuth from "../../context/useAuth.jsx" // <--- ¡Ruta corregida aquí!
+import useAuth from "../context/useAuth.jsx" // <--- ¡Ruta corregida aquí!
 
 export default function ProtectedRoute({ children }) {
   const { user, loading, isInitialized } = useAuth()

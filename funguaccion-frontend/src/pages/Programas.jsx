@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowLeft, Users, Music, Lightbulb, Bike, Target, Heart, Building, ChevronDown, ChevronUp } from "lucide-react"
-import logo from "../assets/logo.png"
+import { Users, Music, Lightbulb, Bike, Target, Heart, Building, ChevronDown, ChevronUp } from "lucide-react"
+import Navigation from "../components/Navigation.jsx"
 
 export default function Programas() {
   const [expandedProgram, setExpandedProgram] = useState(null)
@@ -134,21 +134,7 @@ export default function Programas() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
-      {/* Header */}
-      <header className="glass sticky top-0 z-50 border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              className="flex items-center space-x-3 text-green-700 hover:text-green-600 transition-colors duration-200"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Volver al inicio</span>
-            </Link>
-            <img src={logo || "/placeholder.svg"} alt="Logo Fundación" className="h-10 object-contain" />
-          </div>
-        </div>
-      </header>
+      <Navigation currentPage="programas" />
 
       {/* Hero Section */}
       <section className="py-16 px-6">
