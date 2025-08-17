@@ -1,9 +1,10 @@
 "use client"
 
 import { Navigate, useLocation } from "react-router-dom"
-import useAuth from "../context/useAuth.jsx" // <--- ¡Ruta corregida aquí!
+import useAuth from "../context/useAuth.jsx"
+import { hasRole } from "../utils/roles.js"
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, roles }) {
   const { user, loading, isInitialized } = useAuth()
   const location = useLocation()
 
@@ -24,6 +25,11 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  // Usuario autenticado, mostrar el componente
+  // 🔒 Si se requieren roles específicos y el usuario no los tiene
+  if (roles && !roles.some(role => hasRole(user, role))) {
+    return <Navigate to="/me" replace />
+  }
+
+  // Usuario autenticado y con permisos correctos
   return children
 }

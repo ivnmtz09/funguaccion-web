@@ -1,18 +1,33 @@
 "use client"
 
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LogOut, User, UserCheck, AlertTriangle, Home, Edit, Phone, MapPin, BookOpen, Heart } from "lucide-react"
 import useAuth from "../context/useAuth.jsx"
 import Navigation from "../components/Navigation.jsx"
+import { API_BASE } from "../api.js"
+import { hasRole } from "../utils/roles.js"
+import DashboardCard from "../components/DashboardCard.jsx"
+import Avatar from "../components/Avatar.jsx"
+
 
 export default function UserInfo() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [imgError, setImgError] = useState(false);
 
   const handleLogout = () => {
     logout()
     navigate("/login")
   }
+
+const avatarUrl = user?.profile_image
+  ? (user.profile_image.startsWith("http")
+      ? user.profile_image
+      : `${API_BASE}${user.profile_image}`)
+  : null;
+
+const showAvatarImage = Boolean(avatarUrl && !imgError);
 
   // Si el usuario no está cargado o no está autenticado, puedes mostrar un loading o redirigir
   if (!user) {
@@ -35,6 +50,7 @@ export default function UserInfo() {
             {/* Header mejorado */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-6 border-b border-gray-200">
               <div className="flex items-center space-x-4 mb-4 lg:mb-0">
+                <Avatar src={avatarUrl} size={64} className="mr-4" />
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold gradient-text">Perfil del Usuario</h1>
                   <p className="text-gray-600 text-sm mt-1">Información personal y roles asignados</p>
@@ -141,6 +157,69 @@ export default function UserInfo() {
                       <p className="text-yellow-600 text-sm mt-1">Contacta al administrador para obtener permisos</p>
                     </div>
                   )}
+
+                <div className="mt-8 grid md:grid-cols-1 gap-6">
+
+                  {hasRole(user, "admin") && (
+                    <DashboardCard
+                      title="Panel de Administrador"
+                      description="Gestiona usuarios, roles y contenido."
+                      color="red"
+                      actions={[
+                        { label: "Ir al Panel", primary: true, onClick: () => navigate("/admin-dashboard") },
+                        { label: "Ver Posts", onClick: () => navigate("/posts") }
+                      ]}
+                    />
+                  )}
+
+                  {hasRole(user, "editor") && (
+                    <DashboardCard
+                      title="Panel de Editor"
+                      description="Crea y publica Noticias, Blogs y Eventos."
+                      color="blue"
+                      actions={[
+                        { label: "Crear contenido", primary: true, onClick: () => navigate("/posts/create") },
+                        { label: "Ver publicaciones", onClick: () => navigate("/posts") }
+                      ]}
+                    />
+                  )}
+
+                  {hasRole(user, "colaborador") && (
+                    <DashboardCard
+                      title="Área de Colaborador"
+                      description="Propón borradores y sube documentos."
+                      color="green"
+                      actions={[
+                        { label: "Crear borrador", primary: true, onClick: () => navigate("/posts/create") },
+                        { label: "Subir documento", onClick: () => navigate("/documents/upload") }
+                      ]}
+                    />
+                  )}
+
+                  {hasRole(user, "voluntario") && (
+                    <DashboardCard
+                      title="Zona de Voluntariado"
+                      description="Calendario y materiales internos."
+                      color="emerald"
+                      actions={[
+                        { label: "Ver calendario", primary: true, onClick: () => navigate("/volunteer") }
+                      ]}
+                    />
+                  )}
+
+                  {hasRole(user, "visitante") && (
+                    <DashboardCard
+                      title="Visitante"
+                      description="Explora el contenido público."
+                      color="yellow"
+                      actions={[
+                        { label: "Zona de Visitante", primary: true, onClick: () => navigate("/visitante-dashboard") }
+                      ]}
+                    />
+                  )}
+
+                </div>
+
                 </div>
               </div>
             </div>

@@ -18,6 +18,7 @@ class CustomUser(AbstractUser):
     biografia = models.TextField(blank=True, null=True)
     intereses = models.TextField(blank=True, null=True)
     roles = models.ManyToManyField(Role, related_name='users', blank=True)
+    profile_image = models.ImageField(upload_to="profiles/", blank=True, null=True)
 
     def __str__(self):
         return self.username

@@ -86,17 +86,23 @@ export function AuthProvider({ children }) {
   }
 
   const updateProfile = async (data) => {
-    try {
-      const res = await api.put("/users/me/update/", data)
-      setUser(res.data)
-      return { success: true, user: res.data }
-    } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || "Error al actualizar perfil",
+  try {
+    let formData = new FormData()
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value)
       }
-    }
+    })
+
+    const res = await api.put("/users/me/update/", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    })
+    setUser(res.data)
+    return { success: true, user: res.data }
+  } catch (error) {
+    return { success: false, error: "Error al actualizar perfil" }
   }
+}
 
   const isAuthenticated = () => {
     return user !== null && localStorage.getItem("access") !== null

@@ -60,7 +60,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             "id", "username", "first_name", "last_name", "email",
-            "telefono", "ubicacion", "biografia", "intereses"
+            "telefono", "ubicacion", "biografia", "intereses", "profile_image"
         ]
 
 
@@ -78,10 +78,11 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
     biografia = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     telefono = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     ubicacion = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    profile_image = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'biografia', 'telefono', 'ubicacion', 'intereses']
+        fields = ['first_name', 'last_name', 'email', 'biografia', 'telefono', 'ubicacion', 'intereses', 'profile_image']
 
     def to_internal_value(self, data):
         processed_data = data.copy()

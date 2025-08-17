@@ -12,7 +12,14 @@ import Nosotros from "./pages/Nosotros.jsx"
 import Programas from "./pages/Programas.jsx"
 import Contacto from "./pages/Contacto.jsx"
 import EditProfile from "./pages/EditProfile.jsx"
-import api from './api'; // Asegúrate de que la ruta sea correcta
+// Importar dashboards
+import AdminDashboard from "./pages/AdminDashboard.jsx"
+import EditorDashboard from "./pages/EditorDashboard.jsx"
+import ColaboradorDashboard from "./pages/ColaboradorDashboard.jsx"
+import VolunteerDashboard from "./pages/VolunteerDashboard.jsx"
+import VisitanteDashboard from "./pages/VisitanteDashboard.jsx"
+
+import api from './api';
 
 export default function App() {
   const { loading, isInitialized } = useAuth()
@@ -58,6 +65,51 @@ export default function App() {
         element={
           <ProtectedRoute>
             <EditProfile updateUserProfile={updateUserProfile} />
+          </ProtectedRoute>
+        }
+      />
+      {/* Dashboards por rol */}
+      <Route
+        path="/admin-dashboard"
+        element={
+          <ProtectedRoute roles={["admin"]}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/editor-dashboard"
+        element={
+          <ProtectedRoute roles={["editor"]}>
+            <EditorDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/colaborador-dashboard"
+        element={
+          <ProtectedRoute roles={["colaborador"]}>
+            <ColaboradorDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/volunteer"
+        element={
+          <ProtectedRoute roles={["voluntario"]}>
+            <VolunteerDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/visitante-dashboard"
+        element={
+          <ProtectedRoute roles={["visitante"]}>
+            <VisitanteDashboard />
           </ProtectedRoute>
         }
       />

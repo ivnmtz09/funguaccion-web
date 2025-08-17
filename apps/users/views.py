@@ -7,7 +7,8 @@ from rest_framework import status, permissions, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import action
-from .models import CustomUser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from .models import CustomUser, Role
 from .serializers import (
     RegisterSerializer,
     CustomTokenObtainPairSerializer,
@@ -122,15 +123,8 @@ class UserPermissionsView(APIView):
 class UpdateProfileView(generics.UpdateAPIView):
     serializer_class = UpdateProfileSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_object(self):
         return self.request.user
-
-    # Ejemplo de función para actualizar perfil
-    # Esta función debe implementarse en el frontend (JavaScript), no en la vista de Django.
-
-    # Ejemplo en tu función login
-    # const { access, refresh, user } = response.data;
-    # localStorage.setItem("access", access);
-    # localStorage.setItem("refresh", refresh);
-    # setUser(user); // user debe tener todos los campos extra y roles
+    

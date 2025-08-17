@@ -2,10 +2,13 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { ArrowLeft, User, Save, Camera } from 'lucide-react'
+import { ArrowLeft, User, Save, Camera } from "lucide-react"
 import useAuth from "../context/useAuth.jsx"
 import api from "../api.js"
+import { API_BASE } from "../api.js"
 import logo from "../assets/logo.png"
+import Avatar from "../components/Avatar.jsx"
+
 
 export default function EditProfile() {
   const { user, setUser } = useAuth()
@@ -15,6 +18,8 @@ export default function EditProfile() {
   const [success, setSuccess] = useState("")
   const [customLocation, setCustomLocation] = useState("")
   const [showCustomLocation, setShowCustomLocation] = useState(false)
+  const [preview, setPreview] = useState(user?.profile_image || "")
+  const [imageFile, setImageFile] = useState(null)
 
   const [formData, setFormData] = useState({
     first_name: user?.first_name || "",
@@ -69,6 +74,20 @@ export default function EditProfile() {
     Cundinamarca: ["Soacha", "Chía", "Zipaquirá", "Facatativá", "Fusagasugá"],
   }
 
+  const handleImageChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    setImageFile(file)
+    setPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const avatarUrl = preview || (user?.profile_image?.startsWith("http")
+  ? user.profile_image
+  : user?.profile_image
+    ? `${API_BASE}${user.profile_image}`
+    : null);
+
   const handleChange = (e) => {
     const { name, value, options, type } = e.target
     if (name === "intereses") {
@@ -116,88 +135,59 @@ export default function EditProfile() {
     setFormData({ ...formData, intereses: interesesActuales })
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    setSuccess("")
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setIsLoading(true)
+  setError("")
+  setSuccess("")
 
-    try {
-      const cleanData = (value) => {
-        if (typeof value === "string") {
-          const trimmed = value.trim()
-          return trimmed === "" ? null : trimmed
-        }
-        return value === "" ? null : value
-      }
+  try {
+    const formDataToSend = new FormData()
 
-      let interesesArray = []
-      if (Array.isArray(formData.intereses)) {
-        interesesArray = formData.intereses.filter((i) => i && i.trim())
-      } else if (typeof formData.intereses === "string" && formData.intereses.trim()) {
-        interesesArray = formData.intereses
-          .split(",")
-          .map((i) => i.trim())
-          .filter(Boolean)
-      }
+    formDataToSend.append("first_name", formData.first_name || "")
+    formDataToSend.append("last_name", formData.last_name || "")
+    formDataToSend.append("email", formData.email || "")
+    formDataToSend.append("telefono", formData.telefono || "")
+    formDataToSend.append("biografia", formData.biografia || "")
+    formDataToSend.append("ubicacion", formData.ubicacion || "")
 
-      const payload = {
-        first_name: cleanData(formData.first_name),
-        last_name: cleanData(formData.last_name),
-        email: cleanData(formData.email),
-        biografia: cleanData(formData.biografia),
-        telefono: cleanData(formData.telefono),
-        ubicacion: cleanData(formData.ubicacion),
-        intereses: interesesArray, // Always send as array, even if empty
-      }
-
-      console.log("Sending payload:", payload) // Debug log
-
-      // Actualizar el perfil
-      const res = await api.put("/users/me/update/", payload)
-      
-      // CAMBIO PRINCIPAL: Obtener datos completos del usuario después de la actualización
-      const userResponse = await api.get("/users/me/")
-      setUser(userResponse.data) // Actualiza con datos completos incluyendo roles
-      
-      setSuccess("¡Cambios guardados exitosamente!")
-      setTimeout(() => {
-        navigate("/me")
-      }, 1200)
-    } catch (err) {
-      // Enhanced error handling for different error types
-      let errorMsg = "No se pudo actualizar el perfil. Intenta de nuevo."
-
-      if (err.response?.data) {
-        if (typeof err.response.data === "string") {
-          errorMsg = err.response.data
-        } else if (err.response.data.detail) {
-          errorMsg = err.response.data.detail
-        } else if (err.response.data.non_field_errors) {
-          errorMsg = err.response.data.non_field_errors.join(" ")
-        } else if (typeof err.response.data === "object") {
-          // Handle field-specific errors
-          const fieldErrors = []
-          Object.entries(err.response.data).forEach(([field, errors]) => {
-            if (Array.isArray(errors)) {
-              fieldErrors.push(`${field}: ${errors.join(", ")}`)
-            } else {
-              fieldErrors.push(`${field}: ${errors}`)
-            }
-          })
-          errorMsg = fieldErrors.length > 0 ? fieldErrors.join("; ") : errorMsg
-        }
-      } else if (err.message) {
-        errorMsg = err.message
-      }
-
-      setError(errorMsg)
-      console.error("Error updating profile:", err)
-      console.error("Error response:", err.response?.data) // Debug log
-    } finally {
-      setIsLoading(false)
+    // Intereses en string separado por comas
+    if (Array.isArray(formData.intereses)) {
+      formDataToSend.append("intereses", formData.intereses.join(", "))
+    } else {
+      formDataToSend.append("intereses", formData.intereses || "")
     }
+
+    // 👇 Aquí va la foto
+    if (imageFile) {
+      formDataToSend.append("profile_image", imageFile)
+    }
+
+    const res = await api.put("/users/me/update/", formDataToSend, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+
+    // Obtener datos actualizados
+    const userResponse = await api.get("/users/me/")
+    setUser(userResponse.data)
+
+    setSuccess("¡Cambios guardados exitosamente!")
+    setTimeout(() => {
+      navigate("/me")
+    }, 1200)
+  } catch (err) {
+    let errorMsg = "No se pudo actualizar el perfil. Intenta de nuevo."
+    if (err.response?.data) {
+      errorMsg = JSON.stringify(err.response.data)
+    }
+    setError(errorMsg)
+    console.error("Error updating profile:", err)
+  } finally {
+    setIsLoading(false)
   }
+}
 
   // Fixed interests display logic
   const isInteresSelected = (interes) => {
@@ -239,15 +229,14 @@ export default function EditProfile() {
             {/* Foto de Perfil */}
             <div className="text-center mb-8">
               <div className="relative inline-block">
-                <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-12 h-12 text-green-600" />
-                </div>
-                <button className="absolute bottom-4 right-0 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white hover:bg-green-700 transition-colors duration-200">
-                  <Camera className="w-4 h-4" />
-                </button>
-              </div>
-              <p className="text-sm text-gray-500">Haz clic para cambiar tu foto de perfil</p>
+              <Avatar src={avatarUrl} size={64} className="mr-4" />
+              <label className="absolute bottom-4 right-0 w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-700">
+                <Camera className="w-4 h-4" />
+                <input type="file" className="hidden" onChange={handleImageChange} />
+              </label>
             </div>
+            <p className="text-sm text-gray-500">Haz clic para cambiar tu foto de perfil</p>
+          </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
