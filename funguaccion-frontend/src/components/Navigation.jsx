@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { Users, Target, Mail, Menu, X, LogOut, Settings, Bell, User } from "lucide-react"
+import { Users, Target, Mail, Menu, X, LogOut, Settings, Bell, User, Shield, FileText, Lightbulb } from "lucide-react"
 import useAuth from "../context/useAuth.jsx"
 import logo from "../assets/logo.png"
 
@@ -49,6 +49,7 @@ export default function Navigation({ currentPage = "" }) {
     { name: "inicio", path: "/", label: "Inicio", icon: <div className="w-2 h-2 bg-green-600 rounded-full"></div> },
     { name: "nosotros", path: "/nosotros", label: "Nosotros", icon: <Users className="w-4 h-4 text-green-600" /> },
     { name: "programas", path: "/programas", label: "Programas", icon: <Target className="w-4 h-4 text-green-600" /> },
+    { name: "posts", path: "/posts", label: "Noticias", icon: <div className="w-2 h-2 bg-blue-600 rounded-full"></div> },
     { name: "contacto", path: "/contacto", label: "Contacto", icon: <Mail className="w-4 h-4 text-green-600" /> },
   ]
 
@@ -199,21 +200,57 @@ export default function Navigation({ currentPage = "" }) {
                 </Link>
               ))}
 
-              {user && (
-                <>
-                  <div className="border-t border-gray-200 my-4"></div>
-                  <Link
-                    to="/dashboard"
-                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors duration-200 text-gray-700 hover:text-green-700"
-                    onClick={closeMobileMenu}
-                  >
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Settings className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="font-medium">Dashboard</span>
-                  </Link>
-                </>
-              )}
+                             {user && (
+                 <>
+                   <div className="border-t border-gray-200 my-4"></div>
+                   {user.roles && user.roles.some(role => role.name === "admin") && (
+                     <Link
+                       to="/admin-dashboard"
+                       className="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors duration-200 text-gray-700 hover:text-green-700"
+                       onClick={closeMobileMenu}
+                     >
+                       <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                         <Shield className="w-4 h-4 text-red-600" />
+                       </div>
+                       <span className="font-medium">Admin Dashboard</span>
+                     </Link>
+                   )}
+                   {user.roles && user.roles.some(role => role.name === "editor") && (
+                     <Link
+                       to="/editor-dashboard"
+                       className="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors duration-200 text-gray-700 hover:text-green-700"
+                       onClick={closeMobileMenu}
+                     >
+                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                         <FileText className="w-4 h-4 text-blue-600" />
+                       </div>
+                       <span className="font-medium">Editor Dashboard</span>
+                     </Link>
+                   )}
+                   {user.roles && user.roles.some(role => role.name === "colaborador") && (
+                     <Link
+                       to="/colaborador-dashboard"
+                       className="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors duration-200 text-gray-700 hover:text-green-700"
+                       onClick={closeMobileMenu}
+                     >
+                       <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                         <Lightbulb className="w-4 h-4 text-orange-600" />
+                       </div>
+                       <span className="font-medium">Colaborador Dashboard</span>
+                     </Link>
+                   )}
+                   <Link
+                     to="/dashboard"
+                     className="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors duration-200 text-gray-700 hover:text-green-700"
+                     onClick={closeMobileMenu}
+                   >
+                     <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                       <Settings className="w-4 h-4 text-green-600" />
+                     </div>
+                     <span className="font-medium">Dashboard</span>
+                   </Link>
+                 </>
+               )}
             </nav>
           </div>
 

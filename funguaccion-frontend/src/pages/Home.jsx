@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import {
   Users,
@@ -18,15 +18,67 @@ import {
   HandHeart,
   Building,
   Bike,
+  Calendar,
+  User,
+  ArrowRight,
 } from "lucide-react"
 import Navigation from "../components/Navigation.jsx"
 import logo from "../assets/logo.png"
+import { postsAPI, categoriesAPI } from "../api"
 
 export default function Home() {
   const [expandedSection, setExpandedSection] = useState(null)
+  const [posts, setPosts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section)
+  }
+
+  // Cargar posts y categorías
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const [postsData, categoriesData] = await Promise.all([
+          postsAPI.getPublished({ ordering: "-created_at" }),
+          categoriesAPI.getAll()
+        ])
+        setPosts(postsData.results || postsData)
+        setCategories(categoriesData)
+      } catch (err) {
+        console.error("Error cargando posts:", err)
+        setError("No se pudieron cargar las noticias")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Función para formatear fecha
+  const formatDate = (dateString) => {
+    const options = { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }
+    return new Date(dateString).toLocaleDateString('es-ES', options)
+  }
+
+  // Función para obtener nombre de categoría
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId)
+    return category ? category.name : "Sin categoría"
+  }
+
+  // Función para truncar texto
+  const truncateText = (text, maxLength = 150) => {
+    if (text.length <= maxLength) return text
+    return text.substring(0, maxLength) + "..."
   }
 
   const lineasAccion = [
@@ -210,6 +262,94 @@ export default function Home() {
               <p className="text-gray-600 text-sm sm:text-base">Municipios impactados</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Sección de Noticias y Posts Publicados */}
+      <section className="py-16 px-6 bg-white/50 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center gradient-text mb-4">Últimas Noticias</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-3xl mx-auto">
+            Mantente informado sobre nuestros proyectos, logros y el impacto que generamos en La Guajira
+          </p>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              <p className="text-gray-600 mt-2">Cargando noticias...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600">{error}</p>
+            </div>
+          ) : posts && posts.length > 0 ? (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {posts.slice(0, 3).map((post) => (
+                  <article key={post.id} className="card hover:scale-105 transition-transform duration-300 group">
+                    {post.cover && (
+                      <div className="relative overflow-hidden rounded-t-lg mb-4">
+                        <img
+                          src={post.cover}
+                          alt={post.title}
+                          className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                        />
+                        <div className="absolute top-3 left-3">
+                          <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full">
+                            {getCategoryName(post.category)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="p-6">
+                      <div className="flex items-center text-sm text-gray-500 mb-3">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        <span>{formatDate(post.created_at)}</span>
+                        {post.author && (
+                          <>
+                            <span className="mx-2">•</span>
+                            <User className="w-4 h-4 mr-2" />
+                            <span>{post.author}</span>
+                          </>
+                        )}
+                      </div>
+                      
+                      <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-green-600 transition-colors duration-200">
+                        {post.title}
+                      </h3>
+                      
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {truncateText(post.content)}
+                      </p>
+                      
+                      <Link
+                        to={`/posts/${post.slug}`}
+                        className="inline-flex items-center text-green-600 hover:text-green-700 font-medium group-hover:translate-x-1 transition-all duration-200"
+                      >
+                        Leer más
+                        <ArrowRight className="w-4 h-5 ml-2" />
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
+              
+              <div className="text-center">
+                <Link
+                  to="/posts"
+                  className="btn-primary text-lg px-8 py-4 inline-flex items-center"
+                >
+                  Ver todas las noticias
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-600">No hay noticias disponibles en este momento.</p>
+            </div>
+          )}
         </div>
       </section>
 

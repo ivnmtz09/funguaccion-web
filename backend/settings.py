@@ -32,7 +32,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '10.105.6.149'  # Tu IP local
+    '10.105.6.149',  # Tu IP anterior
+    '192.168.1.4',   # Tu IP actual
+    '192.168.1.254'  # Puerta de enlace (opcional)
 ]
 
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
     'apps.users',
     'apps.foundation',
 ]

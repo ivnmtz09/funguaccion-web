@@ -12,6 +12,8 @@ import Nosotros from "./pages/Nosotros.jsx"
 import Programas from "./pages/Programas.jsx"
 import Contacto from "./pages/Contacto.jsx"
 import EditProfile from "./pages/EditProfile.jsx"
+import Posts from "./pages/Posts.jsx"
+import PostDetail from "./pages/PostDetail.jsx"
 // Importar dashboards
 import AdminDashboard from "./pages/AdminDashboard.jsx"
 import EditorDashboard from "./pages/EditorDashboard.jsx"
@@ -50,6 +52,8 @@ export default function App() {
       <Route path="/nosotros" element={<Nosotros />} />
       <Route path="/programas" element={<Programas />} />
       <Route path="/contacto" element={<Contacto />} />
+      <Route path="/posts" element={<Posts />} />
+      <Route path="/posts/:slug" element={<PostDetail />} />
 
       {/* Rutas protegidas */}
       <Route
