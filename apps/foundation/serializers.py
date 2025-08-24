@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Document, Post, Category
+from .models import Document, Post, Category, Suggestion
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -73,3 +73,8 @@ class PostSerializer(serializers.ModelSerializer):
         if len(value.strip()) < 10:
             raise serializers.ValidationError("El contenido debe tener al menos 10 caracteres")
         return value
+
+class SuggestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Suggestion
+        fields = "__all__"

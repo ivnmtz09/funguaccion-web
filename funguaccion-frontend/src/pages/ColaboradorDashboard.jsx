@@ -1,14 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
 import {
   Lightbulb,
-  FileText,
   Plus,
   Edit,
   Trash2,
-  Eye,
   Search,
   Filter,
   ChevronDown,
@@ -48,7 +45,7 @@ export default function ColaboradorDashboard() {
     priority: "medium", // low, medium, high
     description: "", // descripción breve de la sugerencia
     sources: "", // fuentes o referencias
-    estimated_impact: "medium" // low, medium, high
+    estimated_impact: "medium", // low, medium, high
   })
 
   // Cargar datos al montar el componente
@@ -59,10 +56,7 @@ export default function ColaboradorDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [suggestionsData, categoriesData] = await Promise.all([
-        postsAPI.getMySuggestions(),
-        categoriesAPI.getAll()
-      ])
+      const [suggestionsData, categoriesData] = await Promise.all([postsAPI.getMySuggestions(), categoriesAPI.getAll()])
       setSuggestions(suggestionsData.results || suggestionsData)
       setCategories(categoriesData)
     } catch (err) {
@@ -74,29 +68,30 @@ export default function ColaboradorDashboard() {
   }
 
   // Filtrar sugerencias
-  const filteredSuggestions = suggestions.filter(suggestion => {
-    const matchesSearch = suggestion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         suggestion.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         suggestion.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredSuggestions = suggestions.filter((suggestion) => {
+    const matchesSearch =
+      suggestion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      suggestion.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      suggestion.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = !selectedStatus || suggestion.status === selectedStatus
     return matchesSearch && matchesStatus
   })
 
   // Función para formatear fecha
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }
-    return new Date(dateString).toLocaleDateString('es-ES', options)
+    return new Date(dateString).toLocaleDateString("es-ES", options)
   }
 
   // Función para obtener nombre de categoría
   const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId)
+    const category = categories.find((cat) => cat.id === categoryId)
     return category ? category.name : "Sin categoría"
   }
 
@@ -106,7 +101,11 @@ export default function ColaboradorDashboard() {
       pending: { label: "Pendiente", color: "bg-yellow-100 text-yellow-800", icon: <Clock className="w-4 h-4" /> },
       approved: { label: "Aprobada", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
       rejected: { label: "Rechazada", color: "bg-red-100 text-red-800", icon: <XCircle className="w-4 h-4" /> },
-      under_review: { label: "En Revisión", color: "bg-blue-100 text-blue-800", icon: <AlertCircle className="w-4 h-4" /> }
+      under_review: {
+        label: "En Revisión",
+        color: "bg-blue-100 text-blue-800",
+        icon: <AlertCircle className="w-4 h-4" />,
+      },
     }
     const config = statusConfig[status] || statusConfig.pending
     return (
@@ -123,7 +122,7 @@ export default function ColaboradorDashboard() {
       news: { label: "Noticia", color: "bg-blue-100 text-blue-800" },
       event: { label: "Evento", color: "bg-purple-100 text-purple-800" },
       article: { label: "Artículo", color: "bg-green-100 text-green-800" },
-      story: { label: "Historia", color: "bg-orange-100 text-orange-800" }
+      story: { label: "Historia", color: "bg-orange-100 text-orange-800" },
     }
     const config = typeConfig[type] || typeConfig.news
     return (
@@ -138,7 +137,7 @@ export default function ColaboradorDashboard() {
     const priorityConfig = {
       low: { label: "Baja", color: "bg-gray-100 text-gray-800" },
       medium: { label: "Media", color: "bg-yellow-100 text-yellow-800" },
-      high: { label: "Alta", color: "bg-red-100 text-red-800" }
+      high: { label: "Alta", color: "bg-red-100 text-red-800" },
     }
     const config = priorityConfig[priority] || priorityConfig.medium
     return (
@@ -158,7 +157,7 @@ export default function ColaboradorDashboard() {
       priority: "medium",
       description: "",
       sources: "",
-      estimated_impact: "medium"
+      estimated_impact: "medium",
     })
     setEditingSuggestion(null)
   }
@@ -174,7 +173,7 @@ export default function ColaboradorDashboard() {
         priority: suggestion.priority || "medium",
         description: suggestion.description || "",
         sources: suggestion.sources || "",
-        estimated_impact: suggestion.estimated_impact || "medium"
+        estimated_impact: suggestion.estimated_impact || "medium",
       })
       setEditingSuggestion(suggestion)
     } else {
@@ -251,10 +250,7 @@ export default function ColaboradorDashboard() {
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
             <p className="text-gray-600 mb-6">{error}</p>
-            <button
-              onClick={fetchData}
-              className="btn-primary"
-            >
+            <button onClick={fetchData} className="btn-primary">
               Reintentar
             </button>
           </div>
@@ -266,7 +262,7 @@ export default function ColaboradorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navigation />
-      
+
       {/* Header del Dashboard */}
       <section className="py-6 sm:py-8 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
@@ -332,7 +328,7 @@ export default function ColaboradorDashboard() {
                   Filtros
                   {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
-                
+
                 {showFilters && (
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <select
@@ -469,21 +465,17 @@ export default function ColaboradorDashboard() {
                   </tbody>
                 </table>
               </div>
-              
+
               {filteredSuggestions.length === 0 && (
                 <div className="text-center py-12">
                   <Lightbulb className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-600 mb-4">
-                    {searchQuery || selectedStatus 
+                    {searchQuery || selectedStatus
                       ? "No se encontraron sugerencias con los filtros aplicados"
-                      : "No tienes sugerencias enviadas aún"
-                    }
+                      : "No tienes sugerencias enviadas aún"}
                   </p>
                   {!searchQuery && !selectedStatus && (
-                    <button
-                      onClick={() => openSuggestionModal()}
-                      className="btn-primary"
-                    >
+                    <button onClick={() => openSuggestionModal()} className="btn-primary">
                       Enviar tu primera sugerencia
                     </button>
                   )}
@@ -500,9 +492,7 @@ export default function ColaboradorDashboard() {
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-                    {suggestions.length}
-                  </h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">{suggestions.length}</h3>
                   <p className="text-sm sm:text-base text-gray-600">Total Sugerencias</p>
                 </div>
               </div>
@@ -513,7 +503,7 @@ export default function ColaboradorDashboard() {
                     <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
                   </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-                    {suggestions.filter(s => s.status === "pending").length}
+                    {suggestions.filter((s) => s.status === "pending").length}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600">Pendientes</p>
                 </div>
@@ -525,7 +515,7 @@ export default function ColaboradorDashboard() {
                     <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                   </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-                    {suggestions.filter(s => s.status === "approved").length}
+                    {suggestions.filter((s) => s.status === "approved").length}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600">Aprobadas</p>
                 </div>
@@ -537,7 +527,7 @@ export default function ColaboradorDashboard() {
                     <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
                   </div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
-                    {suggestions.filter(s => s.status === "rejected").length}
+                    {suggestions.filter((s) => s.status === "rejected").length}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600">Rechazadas</p>
                 </div>
@@ -549,7 +539,7 @@ export default function ColaboradorDashboard() {
                   <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">Tipos de Sugerencias</h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                     {["news", "event", "article", "story"].map((type) => {
-                      const count = suggestions.filter(s => s.type === type).length
+                      const count = suggestions.filter((s) => s.type === type).length
                       const percentage = suggestions.length > 0 ? (count / suggestions.length) * 100 : 0
                       return (
                         <div key={type} className="text-center">
@@ -581,7 +571,7 @@ export default function ColaboradorDashboard() {
                   <input
                     type="text"
                     value={suggestionForm.title}
-                    onChange={(e) => setSuggestionForm({...suggestionForm, title: e.target.value})}
+                    onChange={(e) => setSuggestionForm({ ...suggestionForm, title: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     placeholder="Título de la sugerencia"
                   />
@@ -592,7 +582,7 @@ export default function ColaboradorDashboard() {
                   <textarea
                     rows={3}
                     value={suggestionForm.description}
-                    onChange={(e) => setSuggestionForm({...suggestionForm, description: e.target.value})}
+                    onChange={(e) => setSuggestionForm({ ...suggestionForm, description: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     placeholder="Describe brevemente tu sugerencia..."
                   />
@@ -603,7 +593,7 @@ export default function ColaboradorDashboard() {
                   <textarea
                     rows={6}
                     value={suggestionForm.content}
-                    onChange={(e) => setSuggestionForm({...suggestionForm, content: e.target.value})}
+                    onChange={(e) => setSuggestionForm({ ...suggestionForm, content: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     placeholder="Desarrolla tu sugerencia con más detalle..."
                   />
@@ -617,7 +607,7 @@ export default function ColaboradorDashboard() {
                     <label className="block text-sm font-medium text-gray-700">Tipo *</label>
                     <select
                       value={suggestionForm.type}
-                      onChange={(e) => setSuggestionForm({...suggestionForm, type: e.target.value})}
+                      onChange={(e) => setSuggestionForm({ ...suggestionForm, type: e.target.value })}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     >
                       <option value="news">Noticia</option>
@@ -631,7 +621,7 @@ export default function ColaboradorDashboard() {
                     <label className="block text-sm font-medium text-gray-700">Categoría *</label>
                     <select
                       value={suggestionForm.category}
-                      onChange={(e) => setSuggestionForm({...suggestionForm, category: e.target.value})}
+                      onChange={(e) => setSuggestionForm({ ...suggestionForm, category: e.target.value })}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     >
                       <option value="">Seleccionar categoría</option>
@@ -649,7 +639,7 @@ export default function ColaboradorDashboard() {
                     <label className="block text-sm font-medium text-gray-700">Prioridad</label>
                     <select
                       value={suggestionForm.priority}
-                      onChange={(e) => setSuggestionForm({...suggestionForm, priority: e.target.value})}
+                      onChange={(e) => setSuggestionForm({ ...suggestionForm, priority: e.target.value })}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     >
                       <option value="low">Baja</option>
@@ -662,7 +652,7 @@ export default function ColaboradorDashboard() {
                     <label className="block text-sm font-medium text-gray-700">Impacto Estimado</label>
                     <select
                       value={suggestionForm.estimated_impact}
-                      onChange={(e) => setSuggestionForm({...suggestionForm, estimated_impact: e.target.value})}
+                      onChange={(e) => setSuggestionForm({ ...suggestionForm, estimated_impact: e.target.value })}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     >
                       <option value="low">Bajo</option>
@@ -677,7 +667,7 @@ export default function ColaboradorDashboard() {
                   <textarea
                     rows={2}
                     value={suggestionForm.sources}
-                    onChange={(e) => setSuggestionForm({...suggestionForm, sources: e.target.value})}
+                    onChange={(e) => setSuggestionForm({ ...suggestionForm, sources: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-sm"
                     placeholder="Fuentes, enlaces o referencias que respalden tu sugerencia..."
                   />
@@ -692,7 +682,12 @@ export default function ColaboradorDashboard() {
                 </button>
                 <button
                   onClick={saveSuggestion}
-                  disabled={!suggestionForm.title.trim() || !suggestionForm.content.trim() || !suggestionForm.category || !suggestionForm.description.trim()}
+                  disabled={
+                    !suggestionForm.title.trim() ||
+                    !suggestionForm.content.trim() ||
+                    !suggestionForm.category ||
+                    !suggestionForm.description.trim()
+                  }
                   className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                 >
                   <Send className="w-4 h-4 mr-2" />

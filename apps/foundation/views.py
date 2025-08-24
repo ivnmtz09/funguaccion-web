@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Document, Post, Category
-from .serializers import DocumentSerializer, PostSerializer, CategorySerializer
+from .models import Document, Post, Category, Suggestion
+from .serializers import DocumentSerializer, PostSerializer, CategorySerializer, SuggestionSerializer
 from .permissions import IsStaffOrReadOnly
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -50,3 +50,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name']
     ordering_fields = ['name']
+
+class SuggestionViewSet(viewsets.ModelViewSet):
+    queryset = Suggestion.objects.all().order_by('-created_at')
+    serializer_class = SuggestionSerializer

@@ -55,10 +55,10 @@ export function AuthProvider({ children }) {
       localStorage.setItem("access", res.data.access)
       localStorage.setItem("refresh", res.data.refresh)
       // Fetch datos completos del usuario después de login
-      const access = res.data.access;
+      const access = res.data.access
       const userRes = await api.get("/users/me/", {
-        headers: { Authorization: `Bearer ${access}` }
-      });
+        headers: { Authorization: `Bearer ${access}` },
+      })
       setUser(userRes.data)
       return { success: true, user: userRes.data }
     } catch (error) {
@@ -86,23 +86,23 @@ export function AuthProvider({ children }) {
   }
 
   const updateProfile = async (data) => {
-  try {
-    let formData = new FormData()
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formData.append(key, value)
-      }
-    })
+    try {
+      const formData = new FormData()
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value)
+        }
+      })
 
-    const res = await api.put("/users/me/update/", formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    })
-    setUser(res.data)
-    return { success: true, user: res.data }
-  } catch (error) {
-    return { success: false, error: "Error al actualizar perfil" }
+      const res = await api.put("/users/me/update/", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      setUser(res.data)
+      return { success: true, user: res.data }
+    } catch (error) {
+      return { success: false, error: "Error al actualizar perfil" }
+    }
   }
-}
 
   const isAuthenticated = () => {
     return user !== null && localStorage.getItem("access") !== null

@@ -26,7 +26,7 @@ export default function ProtectedRoute({ children, roles }) {
   }
 
   // 🔒 Si se requieren roles específicos y el usuario no los tiene
-  if (roles && !roles.some(role => hasRole(user, role))) {
+  if (roles && !roles.some((role) => hasRole(user, role))) {
     return <Navigate to="/me" replace />
   }
 

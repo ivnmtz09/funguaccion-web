@@ -13,8 +13,6 @@ import {
   Filter,
   ChevronDown,
   ChevronUp,
-  Calendar,
-  User,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -45,12 +43,12 @@ export default function EditorDashboard() {
     title: "",
     content: "",
     category: "",
-    status: "draft"
+    status: "draft",
   })
 
   const [categoryForm, setCategoryForm] = useState({
     name: "",
-    slug: ""
+    slug: "",
   })
 
   // Cargar datos al montar el componente
@@ -61,10 +59,7 @@ export default function EditorDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [postsData, categoriesData] = await Promise.all([
-        postsAPI.getMyPosts(),
-        categoriesAPI.getAll()
-      ])
+      const [postsData, categoriesData] = await Promise.all([postsAPI.getMyPosts(), categoriesAPI.getAll()])
       setPosts(postsData.results || postsData)
       setCategories(categoriesData)
     } catch (err) {
@@ -76,34 +71,35 @@ export default function EditorDashboard() {
   }
 
   // Filtrar posts
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch =
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = !selectedStatus || post.status === selectedStatus
     const matchesCategory = !selectedCategory || post.category === selectedCategory
     return matchesSearch && matchesStatus && matchesCategory
   })
 
   // Filtrar categorías
-  const filteredCategories = categories.filter(category => {
+  const filteredCategories = categories.filter((category) => {
     return category.name.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   // Función para formatear fecha
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }
-    return new Date(dateString).toLocaleDateString('es-ES', options)
+    return new Date(dateString).toLocaleDateString("es-ES", options)
   }
 
   // Función para obtener nombre de categoría
   const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId)
+    const category = categories.find((cat) => cat.id === categoryId)
     return category ? category.name : "Sin categoría"
   }
 
@@ -111,8 +107,16 @@ export default function EditorDashboard() {
   const getPostStatus = (status) => {
     const statusConfig = {
       draft: { label: "Borrador", color: "bg-gray-100 text-gray-800", icon: <Clock className="w-4 h-4" /> },
-      published: { label: "Publicado", color: "bg-green-100 text-green-800", icon: <CheckCircle className="w-4 h-4" /> },
-      archived: { label: "Archivado", color: "bg-yellow-100 text-yellow-800", icon: <AlertCircle className="w-4 h-4" /> }
+      published: {
+        label: "Publicado",
+        color: "bg-green-100 text-green-800",
+        icon: <CheckCircle className="w-4 h-4" />,
+      },
+      archived: {
+        label: "Archivado",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <AlertCircle className="w-4 h-4" />,
+      },
     }
     const config = statusConfig[status] || statusConfig.draft
     return (
@@ -129,11 +133,11 @@ export default function EditorDashboard() {
       title: "",
       content: "",
       category: "",
-      status: "draft"
+      status: "draft",
     })
     setCategoryForm({
       name: "",
-      slug: ""
+      slug: "",
     })
     setEditingItem(null)
   }
@@ -145,7 +149,7 @@ export default function EditorDashboard() {
         title: post.title,
         content: post.content,
         category: post.category || "",
-        status: post.status
+        status: post.status,
       })
       setEditingItem(post)
     } else {
@@ -159,7 +163,7 @@ export default function EditorDashboard() {
     if (category) {
       setCategoryForm({
         name: category.name,
-        slug: category.slug
+        slug: category.slug,
       })
       setEditingItem(category)
     } else {
@@ -262,10 +266,7 @@ export default function EditorDashboard() {
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
             <p className="text-gray-600 mb-6">{error}</p>
-            <button
-              onClick={fetchData}
-              className="btn-primary"
-            >
+            <button onClick={fetchData} className="btn-primary">
               Reintentar
             </button>
           </div>
@@ -277,7 +278,7 @@ export default function EditorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navigation />
-      
+
       {/* Header del Dashboard */}
       <section className="py-6 sm:py-8 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
@@ -304,9 +305,7 @@ export default function EditorDashboard() {
             <button
               onClick={() => setActiveTab("posts")}
               className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors duration-200 ${
-                activeTab === "posts"
-                  ? "bg-blue-600 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                activeTab === "posts" ? "bg-blue-600 text-white" : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -342,7 +341,7 @@ export default function EditorDashboard() {
                   Filtros
                   {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
-                
+
                 {showFilters && (
                   <div className="flex items-center space-x-4">
                     {activeTab === "posts" && (
@@ -357,7 +356,7 @@ export default function EditorDashboard() {
                           <option value="published">Publicado</option>
                           <option value="archived">Archivado</option>
                         </select>
-                        
+
                         <select
                           value={selectedCategory}
                           onChange={(e) => setSelectedCategory(e.target.value)}
@@ -390,20 +389,14 @@ export default function EditorDashboard() {
 
                 {/* Botones de acción según la pestaña activa */}
                 {activeTab === "posts" && (
-                  <button
-                    onClick={() => openPostModal()}
-                    className="btn-primary flex items-center space-x-2"
-                  >
+                  <button onClick={() => openPostModal()} className="btn-primary flex items-center space-x-2">
                     <Plus className="w-4 h-4" />
                     <span>Nueva Noticia</span>
                   </button>
                 )}
 
                 {activeTab === "categories" && (
-                  <button
-                    onClick={() => openCategoryModal()}
-                    className="btn-primary flex items-center space-x-2"
-                  >
+                  <button onClick={() => openCategoryModal()} className="btn-primary flex items-center space-x-2">
                     <Plus className="w-4 h-4" />
                     <span>Nueva Categoría</span>
                   </button>
@@ -446,9 +439,7 @@ export default function EditorDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {getCategoryName(post.category)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getPostStatus(post.status)}
-                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">{getPostStatus(post.status)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(post.created_at)}
                         </td>
@@ -482,21 +473,17 @@ export default function EditorDashboard() {
                   </tbody>
                 </table>
               </div>
-              
+
               {filteredPosts.length === 0 && (
                 <div className="text-center py-12">
                   <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-600 mb-4">
-                    {searchQuery || selectedStatus || selectedCategory 
+                    {searchQuery || selectedStatus || selectedCategory
                       ? "No se encontraron noticias con los filtros aplicados"
-                      : "No tienes noticias creadas aún"
-                    }
+                      : "No tienes noticias creadas aún"}
                   </p>
                   {!searchQuery && !selectedStatus && !selectedCategory && (
-                    <button
-                      onClick={() => openPostModal()}
-                      className="btn-primary"
-                    >
+                    <button onClick={() => openPostModal()} className="btn-primary">
                       Crear tu primera noticia
                     </button>
                   )}
@@ -532,11 +519,9 @@ export default function EditorDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{category.name}</div>
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.slug}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {category.slug}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {posts.filter(post => post.category === category.id).length} posts
+                          {posts.filter((post) => post.category === category.id).length} posts
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
@@ -561,21 +546,17 @@ export default function EditorDashboard() {
                   </tbody>
                 </table>
               </div>
-              
+
               {filteredCategories.length === 0 && (
                 <div className="text-center py-12">
                   <Tag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-600 mb-4">
-                    {searchQuery 
+                    {searchQuery
                       ? "No se encontraron categorías con la búsqueda aplicada"
-                      : "No hay categorías creadas aún"
-                    }
+                      : "No hay categorías creadas aún"}
                   </p>
                   {!searchQuery && (
-                    <button
-                      onClick={() => openCategoryModal()}
-                      className="btn-primary"
-                    >
+                    <button onClick={() => openCategoryModal()} className="btn-primary">
                       Crear primera categoría
                     </button>
                   )}
@@ -599,7 +580,7 @@ export default function EditorDashboard() {
                 <input
                   type="text"
                   value={postForm.title}
-                  onChange={(e) => setPostForm({...postForm, title: e.target.value})}
+                  onChange={(e) => setPostForm({ ...postForm, title: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Escribe el título de la noticia"
                 />
@@ -609,20 +590,18 @@ export default function EditorDashboard() {
                 <textarea
                   rows={8}
                   value={postForm.content}
-                  onChange={(e) => setPostForm({...postForm, content: e.target.value})}
+                  onChange={(e) => setPostForm({ ...postForm, content: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Escribe el contenido de la noticia..."
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  Mínimo 10 caracteres. Actual: {postForm.content.length}
-                </p>
+                <p className="mt-1 text-sm text-gray-500">Mínimo 10 caracteres. Actual: {postForm.content.length}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Categoría *</label>
                   <select
                     value={postForm.category}
-                    onChange={(e) => setPostForm({...postForm, category: e.target.value})}
+                    onChange={(e) => setPostForm({ ...postForm, category: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Seleccionar categoría</option>
@@ -637,7 +616,7 @@ export default function EditorDashboard() {
                   <label className="block text-sm font-medium text-gray-700">Estado</label>
                   <select
                     value={postForm.status}
-                    onChange={(e) => setPostForm({...postForm, status: e.target.value})}
+                    onChange={(e) => setPostForm({ ...postForm, status: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="draft">Borrador</option>
@@ -679,7 +658,7 @@ export default function EditorDashboard() {
                 <input
                   type="text"
                   value={categoryForm.name}
-                  onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Nombre de la categoría"
                 />
@@ -689,13 +668,11 @@ export default function EditorDashboard() {
                 <input
                   type="text"
                   value={categoryForm.slug}
-                  onChange={(e) => setCategoryForm({...categoryForm, slug: e.target.value})}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="slug-de-la-categoria"
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  URL amigable para la categoría
-                </p>
+                <p className="mt-1 text-sm text-gray-500">URL amigable para la categoría</p>
               </div>
             </div>
             <div className="flex justify-end space-x-3 mt-6">

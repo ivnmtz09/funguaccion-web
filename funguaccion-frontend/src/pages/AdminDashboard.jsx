@@ -4,23 +4,22 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import {
   Users,
-  UserPlus,
-  Shield,
   FileText,
   Tag,
-  Settings,
+  Shield,
+  Plus,
   Edit,
   Trash2,
   Eye,
-  Plus,
   Search,
   Filter,
   ChevronDown,
   ChevronUp,
+  UserPlus,
   CheckCircle,
-  XCircle,
   AlertCircle,
   Lightbulb,
+  XCircle,
 } from "lucide-react"
 import Navigation from "../components/Navigation.jsx"
 import { usersAPI, postsAPI, categoriesAPI } from "../api"
@@ -52,19 +51,19 @@ export default function AdminDashboard() {
     first_name: "",
     last_name: "",
     password: "",
-    roles: []
+    roles: [],
   })
 
   const [postForm, setPostForm] = useState({
     title: "",
     content: "",
     category: "",
-    status: "draft"
+    status: "draft",
   })
 
   const [categoryForm, setCategoryForm] = useState({
     name: "",
-    slug: ""
+    slug: "",
   })
 
   // Cargar datos al montar el componente
@@ -79,7 +78,7 @@ export default function AdminDashboard() {
         usersAPI.getAll(),
         postsAPI.getAll(),
         categoriesAPI.getAll(),
-        postsAPI.getAllSuggestions()
+        postsAPI.getAllSuggestions(),
       ])
       setUsers(usersData.results || usersData)
       setPosts(postsData.results || postsData)
@@ -94,65 +93,66 @@ export default function AdminDashboard() {
   }
 
   // Filtrar usuarios
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesRole = !selectedRole || user.roles.some(role => role.name === selectedRole)
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesRole = !selectedRole || user.roles.some((role) => role.name === selectedRole)
     return matchesSearch && matchesRole
   })
 
   // Filtrar posts
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch =
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = !selectedRole || post.status === selectedRole
     return matchesSearch && matchesStatus
   })
 
   // Filtrar categorías
-  const filteredCategories = categories.filter(category => {
+  const filteredCategories = categories.filter((category) => {
     return category.name.toLowerCase().includes(searchQuery.toLowerCase())
   })
 
   // Filtrar sugerencias
-  const filteredSuggestions = suggestions.filter(suggestion => {
-    const matchesSearch = suggestion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         suggestion.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredSuggestions = suggestions.filter((suggestion) => {
+    const matchesSearch =
+      suggestion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      suggestion.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesStatus = !selectedRole || suggestion.status === selectedRole
     return matchesSearch && matchesStatus
   })
 
   // Función para formatear fecha
   const formatDate = (dateString) => {
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }
-    return new Date(dateString).toLocaleDateString('es-ES', options)
+    return new Date(dateString).toLocaleDateString("es-ES", options)
   }
 
   // Función para obtener roles del usuario
   const getUserRoles = (userRoles) => {
-    return userRoles.map(role => role.name).join(", ")
+    return userRoles.map((role) => role.name).join(", ")
   }
 
   // Función para obtener nombre de categoría
   const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId)
+    const category = categories.find((cat) => cat.id === categoryId)
     return category ? category.name : "Sin categoría"
   }
 
   // Función para obtener nombre del autor
   const getAuthorName = (authorId) => {
-    const author = users.find(u => u.id === authorId)
+    const author = users.find((u) => u.id === authorId)
     if (author) {
-      return author.first_name && author.last_name 
-        ? `${author.first_name} ${author.last_name}`
-        : author.username
+      return author.first_name && author.last_name ? `${author.first_name} ${author.last_name}` : author.username
     }
     return "Usuario desconocido"
   }
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
     const statusConfig = {
       draft: { label: "Borrador", color: "bg-gray-100 text-gray-800" },
       published: { label: "Publicado", color: "bg-green-100 text-green-800" },
-      archived: { label: "Archivado", color: "bg-yellow-100 text-yellow-800" }
+      archived: { label: "Archivado", color: "bg-yellow-100 text-yellow-800" },
     }
     const config = statusConfig[status] || statusConfig.draft
     return (
@@ -180,17 +180,17 @@ export default function AdminDashboard() {
       first_name: "",
       last_name: "",
       password: "",
-      roles: []
+      roles: [],
     })
     setPostForm({
       title: "",
       content: "",
       category: "",
-      status: "draft"
+      status: "draft",
     })
     setCategoryForm({
       name: "",
-      slug: ""
+      slug: "",
     })
     setEditingItem(null)
   }
@@ -204,7 +204,7 @@ export default function AdminDashboard() {
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         password: "",
-        roles: user.roles.map(role => role.id)
+        roles: user.roles.map((role) => role.id),
       })
       setEditingItem(user)
     } else {
@@ -220,7 +220,7 @@ export default function AdminDashboard() {
         title: post.title,
         content: post.content,
         category: post.category || "",
-        status: post.status
+        status: post.status,
       })
       setEditingItem(post)
     } else {
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
     if (category) {
       setCategoryForm({
         name: category.name,
-        slug: category.slug
+        slug: category.slug,
       })
       setEditingItem(category)
     } else {
@@ -359,12 +359,12 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+      <div className="dashboard-container bg-gradient-to-br from-green-50 via-white to-green-100">
         <Navigation />
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center" style={{ minHeight: "calc(100dvh - 4rem)" }}>
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-            <p className="text-gray-600 mt-4 text-lg">Cargando dashboard...</p>
+            <div className="loading-spinner"></div>
+            <p className="text-gray-600 mt-4 text-base sm:text-lg">Cargando dashboard...</p>
           </div>
         </div>
       </div>
@@ -373,17 +373,14 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+      <div className="dashboard-container bg-gradient-to-br from-green-50 via-white to-green-100">
         <Navigation />
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center" style={{ minHeight: "calc(100dvh - 4rem)" }}>
           <div className="text-center">
-            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <button
-              onClick={fetchData}
-              className="btn-primary"
-            >
+            <AlertCircle className="error-icon" />
+            <h1 className="error-title">Error</h1>
+            <p className="error-message">{error}</p>
+            <button onClick={fetchData} className="btn-primary">
               Reintentar
             </button>
           </div>
@@ -393,16 +390,15 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+    <div className="dashboard-container bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navigation />
-      
-      {/* Header del Dashboard */}
-      <section className="py-6 sm:py-8 px-4 sm:px-6">
+
+      <section className="dashboard-header">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
             <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">Panel de Administración</h1>
-              <p className="text-sm sm:text-base text-gray-600">Gestiona usuarios, contenido y configuración del sistema</p>
+              <h1 className="dashboard-title">Panel de Administración</h1>
+              <p className="dashboard-subtitle">Gestiona usuarios, contenido y configuración del sistema</p>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4 shrink-0">
               <div className="text-right hidden sm:block">
@@ -417,36 +413,25 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Tabs de navegación */}
-          <div className="flex flex-wrap gap-1 bg-white rounded-lg p-1 shadow-sm">
+          <div className="dashboard-tabs">
             <button
               onClick={() => setActiveTab("users")}
-              className={`flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${
-                activeTab === "users"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              }`}
+              className={`dashboard-tab ${activeTab === "users" ? "dashboard-tab-active" : "dashboard-tab-inactive"}`}
             >
               <Users className="w-4 h-4" />
               <span className="whitespace-nowrap">Usuarios</span>
             </button>
             <button
               onClick={() => setActiveTab("posts")}
-              className={`flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${
-                activeTab === "posts"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              }`}
+              className={`dashboard-tab ${activeTab === "posts" ? "dashboard-tab-active" : "dashboard-tab-inactive"}`}
             >
               <FileText className="w-4 h-4" />
               <span className="whitespace-nowrap">Noticias</span>
             </button>
             <button
               onClick={() => setActiveTab("suggestions")}
-              className={`flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${
-                activeTab === "suggestions"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              className={`dashboard-tab ${
+                activeTab === "suggestions" ? "dashboard-tab-active" : "dashboard-tab-inactive"
               }`}
             >
               <Lightbulb className="w-4 h-4" />
@@ -454,54 +439,38 @@ export default function AdminDashboard() {
             </button>
             <button
               onClick={() => setActiveTab("categories")}
-              className={`flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${
-                activeTab === "categories"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              className={`dashboard-tab ${
+                activeTab === "categories" ? "dashboard-tab-active" : "dashboard-tab-inactive"
               }`}
             >
               <Tag className="w-4 h-4" />
               <span className="whitespace-nowrap">Categorías</span>
             </button>
-            <button
-              onClick={() => setActiveTab("settings")}
-              className={`flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 rounded-md transition-colors duration-200 text-sm sm:text-base ${
-                activeTab === "settings"
-                  ? "bg-green-600 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              }`}
-            >
-              <Settings className="w-4 h-4" />
-              <span className="whitespace-nowrap">Configuración</span>
-            </button>
           </div>
         </div>
       </section>
 
-      {/* Contenido del Dashboard */}
       <section className="px-4 sm:px-6 pb-16">
         <div className="max-w-7xl mx-auto">
-          {/* Filtros y búsqueda */}
           <div className="card mb-6">
-            <div className="flex flex-col gap-4">
-              {/* Primera fila: Filtros */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+            <div className="dashboard-filters">
+              <div className="dashboard-filter-row">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-200 text-sm sm:text-base"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-200 text-sm sm:text-base touch-manipulation"
                 >
                   <Filter className="w-4 h-4" />
                   Filtros
                   {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
-                
+
                 {showFilters && (
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     {activeTab === "users" && (
                       <select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                        className="dashboard-filter-input"
                       >
                         <option value="">Todos los roles</option>
                         <option value="admin">Admin</option>
@@ -511,12 +480,12 @@ export default function AdminDashboard() {
                         <option value="visitante">Visitante</option>
                       </select>
                     )}
-                    
+
                     {activeTab === "posts" && (
                       <select
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
-                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                        className="dashboard-filter-input"
                       >
                         <option value="">Todos los estados</option>
                         <option value="draft">Borrador</option>
@@ -528,8 +497,7 @@ export default function AdminDashboard() {
                 )}
               </div>
 
-              {/* Segunda fila: Búsqueda y botón */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full">
+              <div className="dashboard-filter-row w-full">
                 <div className="relative flex-1 sm:flex-initial">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
@@ -537,36 +505,26 @@ export default function AdminDashboard() {
                     placeholder={`Buscar ${activeTab === "users" ? "usuarios" : activeTab === "posts" ? "noticias" : "categorías"}...`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    className="dashboard-search"
                   />
                 </div>
 
-                {/* Botones de acción según la pestaña activa */}
                 {activeTab === "users" && (
-                  <button
-                    onClick={() => openUserModal()}
-                    className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto text-sm sm:text-base"
-                  >
+                  <button onClick={() => openUserModal()} className="dashboard-action-btn">
                     <UserPlus className="w-4 h-4" />
                     <span>Nuevo Usuario</span>
                   </button>
                 )}
 
                 {activeTab === "posts" && (
-                  <button
-                    onClick={() => openPostModal()}
-                    className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto text-sm sm:text-base"
-                  >
+                  <button onClick={() => openPostModal()} className="dashboard-action-btn">
                     <Plus className="w-4 h-4" />
                     <span>Nueva Noticia</span>
                   </button>
                 )}
 
                 {activeTab === "categories" && (
-                  <button
-                    onClick={() => openCategoryModal()}
-                    className="btn-primary flex items-center justify-center space-x-2 w-full sm:w-auto text-sm sm:text-base"
-                  >
+                  <button onClick={() => openCategoryModal()} className="dashboard-action-btn">
                     <Plus className="w-4 h-4" />
                     <span>Nueva Categoría</span>
                   </button>
@@ -575,50 +533,44 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Tabla de Usuarios */}
           {activeTab === "users" && (
             <div className="card">
-              <div className="overflow-x-auto">
+              <div className="dashboard-table">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Usuario
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Email
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Roles
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Estado
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Acciones
-                      </th>
+                      <th className="dashboard-table-header">Usuario</th>
+                      <th className="dashboard-table-header dashboard-table-cell-mobile-hidden">Email</th>
+                      <th className="dashboard-table-header dashboard-table-cell-md-hidden">Roles</th>
+                      <th className="dashboard-table-header dashboard-table-cell-lg-hidden">Estado</th>
+                      <th className="dashboard-table-header">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="dashboard-table-cell">
                           <div className="flex items-center">
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                              <Users className="w-5 h-5 text-green-600" />
+                            <div className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+                              <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <span className="text-sm font-medium text-green-600">
+                                  {user.first_name?.[0] || user.username?.[0] || "U"}
+                                </span>
+                              </div>
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-gray-900">
                                 {user.first_name} {user.last_name}
                               </div>
-                              <div className="text-sm text-gray-500">@{user.username}</div>
+                              <div className="text-sm text-gray-500">{user.username}</div>
+                              <div className="text-xs text-gray-500 sm:hidden">{user.email}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {user.email}
+                        <td className="dashboard-table-cell dashboard-table-cell-mobile-hidden">
+                          <div className="text-sm text-gray-900">{user.email}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="dashboard-table-cell dashboard-table-cell-md-hidden">
                           <div className="flex flex-wrap gap-1">
                             {user.roles.map((role) => (
                               <span
@@ -630,23 +582,25 @@ export default function AdminDashboard() {
                             ))}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <td className="dashboard-table-cell dashboard-table-cell-lg-hidden">
+                          <span className="status-badge status-badge-published">
                             <CheckCircle className="w-4 h-4 mr-1" />
                             Activo
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="dashboard-table-cell">
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => openUserModal(user)}
-                              className="text-green-600 hover:text-green-900"
+                              className="table-action-btn table-action-btn-edit"
+                              title="Editar usuario"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => deleteUser(user.id)}
-                              className="text-red-600 hover:text-red-900"
+                              className="table-action-btn table-action-btn-delete"
+                              title="Eliminar usuario"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -657,6 +611,22 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+
+              {filteredUsers.length === 0 && (
+                <div className="text-center py-12">
+                  <Users className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-4 text-sm sm:text-base">
+                    {searchQuery || selectedRole
+                      ? "No se encontraron usuarios con los filtros aplicados"
+                      : "No hay usuarios registrados aún"}
+                  </p>
+                  {!searchQuery && !selectedRole && (
+                    <button onClick={() => openUserModal()} className="btn-primary">
+                      Crear primer usuario
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -700,30 +670,19 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {getCategoryName(post.category)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getPostStatus(post.status)}
-                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">{getPostStatus(post.status)}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatDate(post.created_at)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
-                            <Link
-                              to={`/posts/${post.slug}`}
-                              className="text-blue-600 hover:text-blue-900"
-                            >
+                            <Link to={`/posts/${post.slug}`} className="text-blue-600 hover:text-blue-900">
                               <Eye className="w-4 h-4" />
                             </Link>
-                            <button
-                              onClick={() => openPostModal(post)}
-                              className="text-green-600 hover:text-green-900"
-                            >
+                            <button onClick={() => openPostModal(post)} className="text-green-600 hover:text-green-900">
                               <Edit className="w-4 h-4" />
                             </button>
-                            <button
-                              onClick={() => deletePost(post.id)}
-                              className="text-red-600 hover:text-red-900"
-                            >
+                            <button onClick={() => deletePost(post.id)} className="text-red-600 hover:text-red-900">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -776,40 +735,67 @@ export default function AdminDashboard() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {suggestion.author ? `${suggestion.author.first_name} ${suggestion.author.last_name}` : "Usuario"}
+                          {suggestion.author
+                            ? `${suggestion.author.first_name} ${suggestion.author.last_name}`
+                            : "Usuario"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            suggestion.type === "news" ? "bg-blue-100 text-blue-800" :
-                            suggestion.type === "event" ? "bg-purple-100 text-purple-800" :
-                            suggestion.type === "article" ? "bg-green-100 text-green-800" :
-                            "bg-orange-100 text-orange-800"
-                          }`}>
-                            {suggestion.type === "news" ? "Noticia" :
-                             suggestion.type === "event" ? "Evento" :
-                             suggestion.type === "article" ? "Artículo" : "Historia"}
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              suggestion.type === "news"
+                                ? "bg-blue-100 text-blue-800"
+                                : suggestion.type === "event"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : suggestion.type === "article"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-orange-100 text-orange-800"
+                            }`}
+                          >
+                            {suggestion.type === "news"
+                              ? "Noticia"
+                              : suggestion.type === "event"
+                                ? "Evento"
+                                : suggestion.type === "article"
+                                  ? "Artículo"
+                                  : "Historia"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            suggestion.priority === "high" ? "bg-red-100 text-red-800" :
-                            suggestion.priority === "medium" ? "bg-yellow-100 text-yellow-800" :
-                            "bg-gray-100 text-gray-800"
-                          }`}>
-                            {suggestion.priority === "high" ? "Alta" :
-                             suggestion.priority === "medium" ? "Media" : "Baja"}
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              suggestion.priority === "high"
+                                ? "bg-red-100 text-red-800"
+                                : suggestion.priority === "medium"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {suggestion.priority === "high"
+                              ? "Alta"
+                              : suggestion.priority === "medium"
+                                ? "Media"
+                                : "Baja"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            suggestion.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                            suggestion.status === "approved" ? "bg-green-100 text-green-800" :
-                            suggestion.status === "rejected" ? "bg-red-100 text-red-800" :
-                            "bg-blue-100 text-blue-800"
-                          }`}>
-                            {suggestion.status === "pending" ? "Pendiente" :
-                             suggestion.status === "approved" ? "Aprobada" :
-                             suggestion.status === "rejected" ? "Rechazada" : "En Revisión"}
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              suggestion.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : suggestion.status === "approved"
+                                  ? "bg-green-100 text-green-800"
+                                  : suggestion.status === "rejected"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {suggestion.status === "pending"
+                              ? "Pendiente"
+                              : suggestion.status === "approved"
+                                ? "Aprobada"
+                                : suggestion.status === "rejected"
+                                  ? "Rechazada"
+                                  : "En Revisión"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -819,25 +805,33 @@ export default function AdminDashboard() {
                           <div className="flex items-center space-x-2">
                             {suggestion.status === "pending" && (
                               <>
-                               <button onClick={() => approveSuggestion(suggestion.id)}
-                               className="text-green-600 hover:text-green-900" title="Aprobar sugerencia">
-                                <CheckCircle className="w-4 h-4" />
-                              </button>
-                              <button onClick={() => {const comments = prompt("Comentarios de rechazo:")
-                                  if (comments !== null) {
-                                    rejectSuggestion(suggestion.id, comments)
-                                  }
-                                }}
-                                className="text-red-600 hover:text-red-900"
-                                title="Rechazar sugerencia">
-                                <XCircle className="w-4 h-4" />
-                              </button>
+                                <button
+                                  onClick={() => approveSuggestion(suggestion.id)}
+                                  className="text-green-600 hover:text-green-900"
+                                  title="Aprobar sugerencia"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const comments = prompt("Comentarios de rechazo:")
+                                    if (comments !== null) {
+                                      rejectSuggestion(suggestion.id, comments)
+                                    }
+                                  }}
+                                  className="text-red-600 hover:text-red-900"
+                                  title="Rechazar sugerencia"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </button>
                               </>
                             )}
                             <button
                               onClick={() => {
                                 // Mostrar detalles de la sugerencia
-                                alert(`Título: ${suggestion.title}\nDescripción: ${suggestion.description}\nContenido: ${suggestion.content}`)
+                                alert(
+                                  `Título: ${suggestion.title}\nDescripción: ${suggestion.description}\nContenido: ${suggestion.content}`,
+                                )
                               }}
                               className="text-blue-600 hover:text-blue-900"
                               title="Ver detalles"
@@ -851,15 +845,14 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
-              
+
               {filteredSuggestions.length === 0 && (
                 <div className="text-center py-12">
                   <Lightbulb className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-600 mb-4">
-                    {searchQuery || selectedRole 
+                    {searchQuery || selectedRole
                       ? "No se encontraron sugerencias con los filtros aplicados"
-                      : "No hay sugerencias pendientes"
-                    }
+                      : "No hay sugerencias pendientes"}
                   </p>
                 </div>
               )}
@@ -893,11 +886,9 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{category.name}</div>
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.slug}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {category.slug}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {posts.filter(post => post.category === category.id).length} posts
+                          {posts.filter((post) => post.category === category.id).length} posts
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex items-center space-x-2">
@@ -931,7 +922,7 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Configuración del Sistema</h3>
                   <p className="text-gray-600">Aquí puedes configurar parámetros generales del sistema.</p>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900">Información General</h4>
@@ -954,7 +945,7 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <h4 className="font-medium text-gray-900">Configuración de Posts</h4>
                     <div className="space-y-3">
@@ -976,11 +967,9 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end">
-                  <button className="btn-primary">
-                    Guardar Configuración
-                  </button>
+                  <button className="btn-primary">Guardar Configuración</button>
                 </div>
               </div>
             </div>
@@ -1001,7 +990,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   value={userForm.username}
-                  onChange={(e) => setUserForm({...userForm, username: e.target.value})}
+                  onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -1010,7 +999,7 @@ export default function AdminDashboard() {
                 <input
                   type="email"
                   value={userForm.email}
-                  onChange={(e) => setUserForm({...userForm, email: e.target.value})}
+                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -1020,7 +1009,7 @@ export default function AdminDashboard() {
                   <input
                     type="text"
                     value={userForm.first_name}
-                    onChange={(e) => setUserForm({...userForm, first_name: e.target.value})}
+                    onChange={(e) => setUserForm({ ...userForm, first_name: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
@@ -1029,7 +1018,7 @@ export default function AdminDashboard() {
                   <input
                     type="text"
                     value={userForm.last_name}
-                    onChange={(e) => setUserForm({...userForm, last_name: e.target.value})}
+                    onChange={(e) => setUserForm({ ...userForm, last_name: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
@@ -1040,7 +1029,7 @@ export default function AdminDashboard() {
                   <input
                     type="password"
                     value={userForm.password}
-                    onChange={(e) => setUserForm({...userForm, password: e.target.value})}
+                    onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
@@ -1050,7 +1039,9 @@ export default function AdminDashboard() {
                 <select
                   multiple
                   value={userForm.roles}
-                  onChange={(e) => setUserForm({...userForm, roles: Array.from(e.target.selectedOptions, option => option.value)})}
+                  onChange={(e) =>
+                    setUserForm({ ...userForm, roles: Array.from(e.target.selectedOptions, (option) => option.value) })
+                  }
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 >
                   <option value="admin">Admin</option>
@@ -1068,10 +1059,7 @@ export default function AdminDashboard() {
               >
                 Cancelar
               </button>
-              <button
-                onClick={saveUser}
-                className="btn-primary"
-              >
+              <button onClick={saveUser} className="btn-primary">
                 {editingItem ? "Actualizar" : "Crear"}
               </button>
             </div>
@@ -1092,7 +1080,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   value={postForm.title}
-                  onChange={(e) => setPostForm({...postForm, title: e.target.value})}
+                  onChange={(e) => setPostForm({ ...postForm, title: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -1101,7 +1089,7 @@ export default function AdminDashboard() {
                 <textarea
                   rows={8}
                   value={postForm.content}
-                  onChange={(e) => setPostForm({...postForm, content: e.target.value})}
+                  onChange={(e) => setPostForm({ ...postForm, content: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -1110,7 +1098,7 @@ export default function AdminDashboard() {
                   <label className="block text-sm font-medium text-gray-700">Categoría</label>
                   <select
                     value={postForm.category}
-                    onChange={(e) => setPostForm({...postForm, category: e.target.value})}
+                    onChange={(e) => setPostForm({ ...postForm, category: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   >
                     <option value="">Seleccionar categoría</option>
@@ -1125,7 +1113,7 @@ export default function AdminDashboard() {
                   <label className="block text-sm font-medium text-gray-700">Estado</label>
                   <select
                     value={postForm.status}
-                    onChange={(e) => setPostForm({...postForm, status: e.target.value})}
+                    onChange={(e) => setPostForm({ ...postForm, status: e.target.value })}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                   >
                     <option value="draft">Borrador</option>
@@ -1142,10 +1130,7 @@ export default function AdminDashboard() {
               >
                 Cancelar
               </button>
-              <button
-                onClick={savePost}
-                className="btn-primary"
-              >
+              <button onClick={savePost} className="btn-primary">
                 {editingItem ? "Actualizar" : "Crear"}
               </button>
             </div>
@@ -1166,7 +1151,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   value={categoryForm.name}
-                  onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -1175,7 +1160,7 @@ export default function AdminDashboard() {
                 <input
                   type="text"
                   value={categoryForm.slug}
-                  onChange={(e) => setCategoryForm({...categoryForm, slug: e.target.value})}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, slug: e.target.value })}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 />
               </div>
@@ -1187,10 +1172,7 @@ export default function AdminDashboard() {
               >
                 Cancelar
               </button>
-              <button
-                onClick={saveCategory}
-                className="btn-primary"
-              >
+              <button onClick={saveCategory} className="btn-primary">
                 {editingItem ? "Actualizar" : "Crear"}
               </button>
             </div>

@@ -114,3 +114,18 @@ class UpdateProfileSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    role_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Role.objects.all(),
+        source="roles"
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = [
+            "id", "username", "first_name", "last_name", "email",
+            "telefono", "ubicacion", "biografia", "intereses", "profile_image",
+            "role_ids"
+        ]

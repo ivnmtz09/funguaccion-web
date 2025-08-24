@@ -87,7 +87,7 @@ export const authAPI = {
   logout: () => {
     localStorage.removeItem("access")
     localStorage.removeItem("refresh")
-  }
+  },
 }
 
 // ===== USUARIOS =====
@@ -150,7 +150,7 @@ export const usersAPI = {
   delete: async (id) => {
     const response = await api.delete(`/users/${id}/`)
     return response.data
-  }
+  },
 }
 
 // ===== FOUNDATION - CATEGORÍAS =====
@@ -189,7 +189,7 @@ export const categoriesAPI = {
   delete: async (id) => {
     const response = await api.delete(`/foundation/categories/${id}/`)
     return response.data
-  }
+  },
 }
 
 // ===== FOUNDATION - POSTS =====
@@ -202,16 +202,16 @@ export const postsAPI = {
 
   // Obtener posts publicados (sin autenticación)
   getPublished: async (params = {}) => {
-    const response = await axios.get(`${API_BASE}/api/foundation/posts/`, { 
-      params: { ...params, status: "published" } 
+    const response = await axios.get(`${API_BASE}/api/foundation/posts/`, {
+      params: { ...params, status: "published" },
     })
     return response.data
   },
 
   // Obtener posts publicados con autenticación
   getPublishedAuth: async (params = {}) => {
-    const response = await api.get("/foundation/posts/", { 
-      params: { ...params, status: "published" } 
+    const response = await api.get("/foundation/posts/", {
+      params: { ...params, status: "published" },
     })
     return response.data
   },
@@ -224,8 +224,8 @@ export const postsAPI = {
 
   // Obtener post por slug
   getBySlug: async (slug) => {
-    const response = await api.get("/foundation/posts/", { 
-      params: { slug } 
+    const response = await api.get("/foundation/posts/", {
+      params: { slug },
     })
     return response.data
   },
@@ -256,24 +256,24 @@ export const postsAPI = {
 
   // Buscar posts
   search: async (query, params = {}) => {
-    const response = await api.get("/foundation/posts/", { 
-      params: { ...params, search: query } 
+    const response = await api.get("/foundation/posts/", {
+      params: { ...params, search: query },
     })
     return response.data
   },
 
   // Filtrar posts por categoría
   getByCategory: async (categoryId, params = {}) => {
-    const response = await api.get("/foundation/posts/", { 
-      params: { ...params, category: categoryId } 
+    const response = await api.get("/foundation/posts/", {
+      params: { ...params, category: categoryId },
     })
     return response.data
   },
 
   // Obtener posts del usuario actual
   getMyPosts: async (params = {}) => {
-    const response = await api.get("/foundation/posts/", { 
-      params: { ...params, author: "me" } 
+    const response = await api.get("/foundation/posts/", {
+      params: { ...params, author: "me" },
     })
     return response.data
   },
@@ -281,8 +281,8 @@ export const postsAPI = {
   // ===== SUGERENCIAS =====
   // Obtener sugerencias del usuario actual
   getMySuggestions: async (params = {}) => {
-    const response = await api.get("/foundation/suggestions/", { 
-      params: { ...params, author: "me" } 
+    const response = await api.get("/foundation/suggestions/", {
+      params: { ...params, author: "me" },
     })
     return response.data
   },
@@ -321,7 +321,7 @@ export const postsAPI = {
   rejectSuggestion: async (id, rejectionData) => {
     const response = await api.post(`/foundation/suggestions/${id}/reject/`, rejectionData)
     return response.data
-  }
+  },
 }
 
 // ===== FOUNDATION - DOCUMENTOS =====
@@ -362,7 +362,7 @@ export const documentsAPI = {
   delete: async (id) => {
     const response = await api.delete(`/foundation/documents/${id}/`)
     return response.data
-  }
+  },
 }
 
 // ===== FUNCIONES DE UTILIDAD =====
@@ -392,7 +392,7 @@ export const utilsAPI = {
   clearTokens: () => {
     localStorage.removeItem("access")
     localStorage.removeItem("refresh")
-  }
+  },
 }
 
 export default api

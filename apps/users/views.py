@@ -16,6 +16,7 @@ from .serializers import (
     UserDetailSerializer,
     UserSerializer,
     UpdateProfileSerializer,
+    UserUpdateSerializer,
 )
 from django.contrib.auth import get_user_model, login, logout as django_logout
 from django.contrib.auth.models import update_last_login
@@ -87,10 +88,14 @@ class UserMeView(APIView):
         serializer = UserDetailSerializer(request.user)
         return Response(serializer.data)
     
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('id')
-    serializer_class = UserDetailSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get_serializer_class(self):
+        if self.action == 'update':
+            return UserUpdateSerializer
+        return UserDetailSerializer
 
     @action(detail=True, methods=['get', 'put'], permission_classes=[IsAdminUser])
     def roles(self, request, pk=None):

@@ -34,3 +34,12 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.category})"
+        
+class Suggestion(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Sugerencia de {self.name}"
