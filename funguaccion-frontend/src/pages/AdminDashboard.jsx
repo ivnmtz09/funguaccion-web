@@ -22,7 +22,7 @@ import {
   XCircle,
 } from "lucide-react"
 import Navigation from "../components/Navigation.jsx"
-import { usersAPI, postsAPI, categoriesAPI } from "../api"
+import { usersAPI, postsAPI, categoriesAPI, userRolesAPI } from "../api"
 import useAuth from "../context/useAuth.jsx"
 
 export default function AdminDashboard() {
@@ -37,6 +37,9 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedRole, setSelectedRole] = useState("")
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false)
+  const [availableRoles, setAvailableRoles] = useState([])
 
   // Estados para modales
   const [showUserModal, setShowUserModal] = useState(false)
@@ -69,6 +72,7 @@ export default function AdminDashboard() {
   // Cargar datos al montar el componente
   useEffect(() => {
     fetchData()
+    fetchRoles()
   }, [])
 
   const fetchData = async () => {
@@ -206,12 +210,29 @@ export default function AdminDashboard() {
         password: "",
         roles: user.roles.map((role) => role.id),
       })
-      setEditingItem(user)
+      setSelectedUser(user)
     } else {
       clearForms()
+      setSelectedUser(null)
     }
-    setShowUserModal(true)
+    setIsUserModalOpen(true)
   }
+
+  const closeUserModal = () => {
+    setIsUserModalOpen(false)
+    setSelectedUser(null)
+    clearForms()
+  }
+
+  const fetchRoles = async () => {
+    try {
+      const response = await rolesAPI.getAll()
+      setAvailableRoles(response)
+    } catch (err) {
+      console.error("Error cargando roles:", err)
+    }
+  }
+
 
   // Función para abrir modal de post
   const openPostModal = (post = null) => {
@@ -246,52 +267,69 @@ export default function AdminDashboard() {
   // Función para guardar usuario
   const saveUser = async () => {
     try {
-      if (editingItem) {
-        await usersAPI.update(editingItem.id, userForm)
+      if (selectedUser) {
+        // Para actualizar usuario, primero actualizamos los datos básicos
+        const { roles, ...userData } = userForm;
+        await usersAPI.update(selectedUser.id, userData);
+        await userRolesAPI.updateRoles(selectedUser.id, userForm.roles);
+
       } else {
-        await usersAPI.create(userForm)
+        // Para crear nuevo usuario
+        await usersAPI.create(userForm);
       }
-      setShowUserModal(false)
-      clearForms()
-      fetchData()
+      setIsUserModalOpen(false);
+      clearForms();
+      fetchData();
     } catch (err) {
-      console.error("Error guardando usuario:", err)
-      alert("Error al guardar el usuario")
+      console.error("Error guardando usuario:", err);
+      alert("Error al guardar el usuario");
     }
-  }
+  };
 
   // Función para guardar post
   const savePost = async () => {
-    try {
-      if (editingItem) {
-        await postsAPI.update(editingItem.id, postForm)
-      } else {
-        await postsAPI.create(postForm)
-      }
-      setShowPostModal(false)
-      clearForms()
-      fetchData()
-    } catch (err) {
-      console.error("Error guardando post:", err)
-      alert("Error al guardar el post")
+  try {
+    const postData = {
+      title: postForm.title,
+      content: postForm.content,
+      category_id: postForm.category,
+      status: postForm.status,
     }
+
+    if (editingItem) {
+      await postsAPI.update(editingItem.id, postData)
+    } else {
+      await postsAPI.create(postData)
+    }
+    setShowPostModal(false)
+    clearForms()
+    fetchData()
+  } catch (err) {
+    console.error("Error guardando post:", err)
+    alert("Error al guardar el post")
+  }
   }
 
   // Función para guardar categoría
   const saveCategory = async () => {
-    try {
-      if (editingItem) {
-        await categoriesAPI.update(editingItem.id, categoryForm)
-      } else {
-        await categoriesAPI.create(categoryForm)
-      }
-      setShowCategoryModal(false)
-      clearForms()
-      fetchData()
-    } catch (err) {
-      console.error("Error guardando categoría:", err)
-      alert("Error al guardar la categoría")
+  try {
+    const categoryData = {
+      name: categoryForm.name,
+      slug: categoryForm.slug,
     }
+
+    if (editingItem) {
+      await categoriesAPI.update(editingItem.id, categoryData)
+    } else {
+      await categoriesAPI.create(categoryData)
+    }
+    setShowCategoryModal(false)
+    clearForms()
+    fetchData()
+  } catch (err) {
+    console.error("Error guardando categoría:", err)
+    alert("Error al guardar la categoría")
+  }
   }
 
   // Función para eliminar usuario
@@ -354,6 +392,19 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error("Error rechazando sugerencia:", err)
       alert("Error al rechazar la sugerencia")
+    }
+  }
+
+  // Función para archivar/desarchivar posts
+  const toggleArchivePost = async (postId, currentStatus) => {
+    try {
+      const newStatus = currentStatus === "archived" ? "published" : "archived"
+      await postsAPI.partialUpdate(postId, { status: newStatus })
+      fetchData()
+      alert(`Post ${newStatus === "archived" ? "archivado" : "desarchivado"} exitosamente`)
+    } catch (err) {
+      console.error("Error cambiando estado del post:", err)
+      alert("Error al cambiar el estado del post")
     }
   }
 
@@ -685,6 +736,11 @@ export default function AdminDashboard() {
                             <button onClick={() => deletePost(post.id)} className="text-red-600 hover:text-red-900">
                               <Trash2 className="w-4 h-4" />
                             </button>
+                            <button onClick={() => toggleArchivePost(post.id, post.status)}
+                              className={`${post.status === "archived" ? "bg-green-600 hover:bg-green-700" : "bg-yellow-600 hover:bg-yellow-700"} text-white px-2 py-1 rounded text-xs`}
+                            >
+                              {post.status === "archived" ? "Desarchivar" : "Archivar"}
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -978,11 +1034,11 @@ export default function AdminDashboard() {
       </section>
 
       {/* Modal de Usuario */}
-      {showUserModal && (
+      {isUserModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {editingItem ? "Editar Usuario" : "Nuevo Usuario"}
+              {selectedUser ? "Editar Usuario" : "Nuevo Usuario"}
             </h3>
             <div className="space-y-4">
               <div>
@@ -1023,7 +1079,7 @@ export default function AdminDashboard() {
                   />
                 </div>
               </div>
-              {!editingItem && (
+              {!selectedUser && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Contraseña</label>
                   <input
@@ -1039,28 +1095,29 @@ export default function AdminDashboard() {
                 <select
                   multiple
                   value={userForm.roles}
-                  onChange={(e) =>
-                    setUserForm({ ...userForm, roles: Array.from(e.target.selectedOptions, (option) => option.value) })
-                  }
+                  onChange={(e) => {
+                    const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
+                    setUserForm({ ...userForm, roles: selectedOptions });
+                  }}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
                 >
-                  <option value="admin">Admin</option>
-                  <option value="editor">Editor</option>
-                  <option value="colaborador">Colaborador</option>
-                  <option value="voluntario">Voluntario</option>
-                  <option value="visitante">Visitante</option>
+                  {availableRoles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
             <div className="flex justify-end space-x-3 mt-6">
               <button
-                onClick={() => setShowUserModal(false)}
+                onClick={closeUserModal}
                 className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Cancelar
               </button>
               <button onClick={saveUser} className="btn-primary">
-                {editingItem ? "Actualizar" : "Crear"}
+                {selectedUser ? "Actualizar" : "Crear"}
               </button>
             </div>
           </div>

@@ -69,6 +69,22 @@ api.interceptors.response.use(
   },
 )
 
+  // ===== ROLES DE USUARIO =====
+export const userRolesAPI = {
+    updateRoles: async (id, roleIds) => {
+      const response = await api.put(`/users/${id}/roles/`, { role_ids: roleIds })
+      return response.data
+    }
+  }
+
+  // ===== USUARIOS - ROLES =====
+export const rolesAPI = {
+  getAll: async () => {
+    const response = await api.get("/users/roles/")  // <-- endpoint que debe existir en Django
+    return response.data
+  }
+}
+
 // ===== AUTENTICACIÓN =====
 export const authAPI = {
   // Login
@@ -175,13 +191,15 @@ export const categoriesAPI = {
 
   // Crear nueva categoría
   create: async (categoryData) => {
-    const response = await api.post("/foundation/categories/", categoryData)
+    const { name, slug } = categoryData
+    const response = await api.post("/foundation/categories/", { name, slug })
     return response.data
   },
 
   // Actualizar categoría
   update: async (id, categoryData) => {
-    const response = await api.put(`/foundation/categories/${id}/`, categoryData)
+    const { name, slug } = categoryData
+    const response = await api.put(`/foundation/categories/${id}/`, { name, slug })
     return response.data
   },
 
@@ -232,16 +250,24 @@ export const postsAPI = {
 
   // Crear nuevo post
   create: async (postData) => {
-    const response = await api.post("/foundation/posts/", postData)
+    const payload = { ...postData }
+    if (postData.category && postData.category.id) {
+      payload.category_id = postData.category.id
+      delete payload.category
+    }
+    const response = await api.post("/foundation/posts/", payload)
     return response.data
   },
-
   // Actualizar post
   update: async (id, postData) => {
-    const response = await api.put(`/foundation/posts/${id}/`, postData)
+    const payload = { ...postData }
+    if (postData.category && postData.category.id) {
+      payload.category_id = postData.category.id
+      delete payload.category
+    }
+    const response = await api.put(`/foundation/posts/${id}/`, payload)
     return response.data
   },
-
   // Actualizar parcialmente post
   partialUpdate: async (id, postData) => {
     const response = await api.patch(`/foundation/posts/${id}/`, postData)
@@ -394,6 +420,9 @@ export const utilsAPI = {
     localStorage.removeItem("refresh")
   },
 }
+
+export const updatePostStatus = (id, status) =>
+  api.patch(`/foundation/posts/${id}/`, { status })
 
 export default api
 export { API_BASE }
