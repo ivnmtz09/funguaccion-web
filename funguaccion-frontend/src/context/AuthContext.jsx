@@ -1,127 +1,104 @@
-"use client"
+import { createContext, useEffect, useState } from "react";
+import api, { getAccessToken, getRefreshToken, saveTokens, clearTokens } from "../utils/api";
 
-import { createContext, useState, useEffect } from "react"
-import api from "../api"
-
-const AuthContext = createContext()
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Verificar si hay un usuario autenticado al cargar la app
+  // =========================================================
+  // Cargar usuario desde localStorage
+  // =========================================================
   useEffect(() => {
-    const checkAuth = async () => {
-      const access = localStorage.getItem("access")
-      if (access) {
-        try {
-          const response = await api.get("/users/me/")
-          setUser(response.data)
-          setIsAuthenticated(true)
-        } catch (error) {
-          console.error("Error verificando autenticación:", error)
-          // Si hay error, limpiar tokens
-          localStorage.removeItem("access")
-          localStorage.removeItem("refresh")
-        }
-      }
-      setLoading(false)
-      setIsInitialized(true)
-    }
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+    setLoading(false);
+  }, []);
 
-    checkAuth()
-  }, [])
-
+  // =========================================================
+  // Login con email y password
+  // =========================================================
   const login = async (email, password) => {
     try {
-      const response = await api.post("/users/login/", {
-        email,
-        password,
-      })
-
-      const { access, refresh, user: userData } = response.data
-
-      // Guardar tokens
-      localStorage.setItem("access", access)
-      localStorage.setItem("refresh", refresh)
-
-      // Establecer usuario
-      setUser(userData)
-      setIsAuthenticated(true)
-
-      return { success: true, data: response.data }
+      const { data } = await api.post("/users/login/", { email, password });
+      saveTokens(data.access, data.refresh);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
     } catch (error) {
-      console.error("Error en login:", error)
-      return {
-        success: false,
-        error: error.response?.data?.detail || "Error al iniciar sesión",
-      }
+      console.error("Error en login:", error);
+      return { success: false, message: "Credenciales inválidas o error del servidor." };
     }
-  }
+  };
 
-  const register = async (userData) => {
+  // =========================================================
+  // Login con Google (desde Allauth backend)
+  // =========================================================
+  const loginWithGoogle = async (accessToken) => {
     try {
-      const response = await api.post("/users/register/", userData)
-      return { success: true, data: response.data }
+      const { data } = await api.post("/users/google/login/", {
+        access_token: accessToken,
+      });
+      saveTokens(data.access, data.refresh);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
     } catch (error) {
-      console.error("Error en registro:", error)
-      return {
-        success: false,
-        error: error.response?.data || "Error al registrarse",
-      }
+      console.error("Error en login con Google:", error);
+      return { success: false, message: "No se pudo iniciar sesión con Google." };
     }
-  }
+  };
 
+  // =========================================================
+  // Logout
+  // =========================================================
   const logout = async () => {
     try {
-      const refresh = localStorage.getItem("refresh")
-      if (refresh) {
-        await api.post("/users/logout/", { refresh })
-      }
-    } catch (error) {
-      console.error("Error en logout:", error)
+      const refresh = getRefreshToken();
+      if (refresh) await api.post("/users/logout/", { refresh });
+    } catch (err) {
+      console.warn("Error cerrando sesión:", err);
     } finally {
-      // Limpiar tokens y usuario
-      localStorage.removeItem("access")
-      localStorage.removeItem("refresh")
-      setUser(null)
-      setIsAuthenticated(false)
+      clearTokens();
+      localStorage.removeItem("user");
+      setUser(null);
     }
-  }
+  };
 
-  const updateProfile = async (profileData) => {
-    try {
-      const access = localStorage.getItem("access")
-      const response = await api.put("/users/me/", profileData, {
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      })
-      setUser(response.data)
-      return { success: true, data: response.data }
-    } catch (error) {
-      console.error("Error en updateProfile:", error)
-      return {
-        success: false,
-        error: error.response?.data?.detail || "Error al actualizar el perfil",
+  // =========================================================
+  // Auto refresh de token cada 25 minutos (si el user está activo)
+  // =========================================================
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const refresh = getRefreshToken();
+      if (refresh) {
+        try {
+          const { data } = await api.post("/users/token/refresh/", { refresh });
+          saveTokens(data.access, refresh);
+        } catch {
+          console.warn("No se pudo refrescar el token.");
+          logout();
+        }
       }
-    }
-  }
+    }, 25 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const value = {
     user,
-    setUser,
-    login,
-    logout,
-    updateProfile,
     loading,
-    isInitialized,
-    isAuthenticated,
-  }
+    login,
+    loginWithGoogle,
+    logout,
+    isAuthenticated: !!user,
+    role: user?.role?.name || "visitante",
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export default AuthContext
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+};

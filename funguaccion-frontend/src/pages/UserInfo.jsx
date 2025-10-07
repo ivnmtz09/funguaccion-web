@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { LogOut, User, UserCheck, AlertTriangle, Home, Edit, Phone, MapPin, BookOpen, Heart } from "lucide-react"
 import useAuth from "../context/useAuth.jsx"
 import Navigation from "../components/Navigation.jsx"
-import { API_BASE } from "../api.js"
+import api from "../utils/api.js"
 import { hasRole } from "../utils/roles.js"
 import DashboardCard from "../components/DashboardCard.jsx"
 import Avatar from "../components/Avatar.jsx"
@@ -24,7 +24,7 @@ export default function UserInfo() {
 const avatarUrl = user?.profile_image
   ? (user.profile_image.startsWith("http")
       ? user.profile_image
-      : `${API_BASE}${user.profile_image}`)
+      : `${api}${user.profile_image}`)
   : null;
 
 const showAvatarImage = Boolean(avatarUrl && !imgError);

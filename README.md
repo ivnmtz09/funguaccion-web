@@ -1,9 +1,9 @@
-# 🌱 Sistema de Gestión - Fundación Funguacción
+#  Sistema de Gestión - Fundación Funguacción
 
 Plataforma web para la **Fundación Funguacción**, desarrollada con **Django REST Framework** en el backend y **React + Vite + TailwindCSS** en el frontend.  
 Incluye **autenticación JWT**, sistema de roles y perfiles de usuario personalizables.
 
-## 📋 Tabla de Contenidos
+##  Tabla de Contenidos
 
 - [Tecnologías utilizadas](#-tecnologías-utilizadas)
 - [Características principales](#-características-principales)
@@ -12,7 +12,7 @@ Incluye **autenticación JWT**, sistema de roles y perfiles de usuario personali
 - [Guía para colaboradores](#-guía-para-colaboradores)
 - [Estructura del proyecto](#-estructura-del-proyecto)
 
-## 🛠️ Tecnologías utilizadas
+##  Tecnologías utilizadas
 
 ### **Backend**
 - Django 5.x
@@ -30,15 +30,15 @@ Incluye **autenticación JWT**, sistema de roles y perfiles de usuario personali
 - React Router DOM
 - Lucide Icons
 
-## ✨ Características principales
+##  Características principales
 
-- 🔐 **Autenticación con JWT** (login, logout, registro)
-- 👥 **Sistema de roles y permisos** (Administrador, Editor, Visitante)
-- 👤 **Perfiles de usuario** con datos personales, contacto y biografía
-- 🔄 **Persistencia de sesión** y blacklist de tokens
-- 📱 **Diseño responsive** moderno con TailwindCSS
+-  **Autenticación con JWT** (login, logout, registro)
+-  **Sistema de roles y permisos** (Administrador, Editor, Visitante)
+-  **Perfiles de usuario** con datos personales, contacto y biografía
+-  **Persistencia de sesión** y blacklist de tokens
+-  **Diseño responsive** moderno con TailwindCSS
 
-## 🚀 Instalación y configuración
+##  Instalación y configuración
 
 ### Prerrequisitos
 
@@ -47,14 +47,14 @@ Incluye **autenticación JWT**, sistema de roles y perfiles de usuario personali
 - MySQL
 - Git
 
-### 1️⃣ Clonar el repositorio
+### 1. Clonar el repositorio
 
 \`\`\`bash
 git clone https://github.com/tu-usuario/funguaccion-web.git
 cd funguaccion-web
 \`\`\`
 
-### 2️⃣ Configuración del Backend (Django + DRF)
+### 2. Configuración del Backend (Django + DRF)
 
 #### Crear y activar entorno virtual
 
@@ -87,12 +87,12 @@ contenido en correo
 
 \`\`\`bash
 python manage.py migrate
-python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
 \`\`\`
 
 El backend estará disponible en: `http://localhost:8000`
 
-### 3️⃣ Configuración del Frontend (React + Vite + Tailwind)
+### 3. Configuración del Frontend (React + Vite + Tailwind)
 
 \`\`\`bash
 cd funguaccion-frontend
@@ -106,7 +106,7 @@ npm run dev
 
 El frontend estará disponible en: `http://localhost:5173`
 
-## 📖 Endpoints del API
+## Endpoints del API
 
 | Método | URL | Descripción |
 |--------|-----|-------------|
@@ -118,7 +118,7 @@ El frontend estará disponible en: `http://localhost:5173`
 | `GET` | `/api/users/me/permissions/` | Consultar permisos del usuario |
 | `GET` | `/api/users/` | Listar usuarios (requiere permisos) |
 
-## 👥 Guía para colaboradores
+## Guía para colaboradores
 
 ### Primera configuración
 

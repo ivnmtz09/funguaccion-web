@@ -1,212 +1,128 @@
-"use client"
-
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { Eye, EyeOff, CheckCircle, Shield, ArrowLeft } from "lucide-react"
-import api from "../api"
-import logo from "../assets/logo.png"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import useAuth from "../context/useAuth.jsx";
 
 export default function Register() {
-  const navigate = useNavigate()
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
     first_name: "",
     last_name: "",
+    email: "",
     password: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
+    password2: "",
+  });
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-    if (error) setError("")
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (formData.password !== formData.password2) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
 
     try {
-      await api.post("users/register/", formData)
-      setSuccess(true)
-      setTimeout(() => navigate("/login"), 2000)
+      const response = await register(formData);
+      console.log("Usuario registrado:", response);
+      setSuccess("Registro exitoso. Redirigiendo al inicio de sesión...");
+      setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
-      setError("Error al registrarse. Verifica que todos los campos estén correctos.")
-    } finally {
-      setIsLoading(false)
+      console.error(err);
+      setError(
+        err.response?.data?.message ||
+          "Error al registrarse. Verifica los datos e inténtalo nuevamente."
+      );
     }
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="card w-full max-w-md text-center animate-fade-in">
-          <div className="mb-6">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-green-900 mb-2">¡Registro Exitoso!</h2>
-            <p className="text-gray-600">Tu cuenta ha sido creada correctamente. Serás redirigido al login...</p>
-          </div>
-          <div className="loading-spinner mx-auto"></div>
-        </div>
-      </div>
-    )
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 py-8">
-      {/* Elementos decorativos */}
-      <div className="blob-decoration w-72 h-72 bg-green-300 top-10 -left-20"></div>
-      <div className="blob-decoration w-72 h-72 bg-green-200 top-20 -right-20 animation-delay-2000"></div>
-      <div className="blob-decoration w-72 h-72 bg-green-100 -bottom-10 left-20 animation-delay-4000"></div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full space-y-6"
+      >
+        <h2 className="text-3xl font-bold text-center text-green-700">
+          Crear Cuenta
+        </h2>
 
-      <div className="card w-full max-w-lg relative z-10 animate-fade-in">
-        {/* Header mejorado */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block hover:scale-105 transition-transform duration-300">
-            <img
-              src={logo || "/placeholder.svg"}
-              alt="Logo Fundación"
-              className="w-28 sm:w-32 mx-auto mb-4 animate-float drop-shadow-lg"
-            />
+        {error && <p className="text-red-600 text-center">{error}</p>}
+        {success && <p className="text-green-600 text-center">{success}</p>}
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="text"
+            name="first_name"
+            placeholder="Nombre"
+            value={formData.first_name}
+            onChange={handleChange}
+            className="p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+            required
+          />
+          <input
+            type="text"
+            name="last_name"
+            placeholder="Apellido"
+            value={formData.last_name}
+            onChange={handleChange}
+            className="p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+            required
+          />
+        </div>
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+          required
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Contraseña"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+          required
+        />
+
+        <input
+          type="password"
+          name="password2"
+          placeholder="Confirmar contraseña"
+          value={formData.password2}
+          onChange={handleChange}
+          className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-500"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
+        >
+          Registrarme
+        </button>
+
+        <p className="text-center text-sm text-gray-600">
+          ¿Ya tienes una cuenta?{" "}
+          <Link to="/login" className="text-green-700 hover:underline">
+            Inicia sesión aquí
           </Link>
-          <h2 className="text-2xl sm:text-3xl font-bold gradient-text mb-2">Únete a Nosotros</h2>
-          <p className="text-gray-600 text-sm">Crea tu cuenta y sé parte del cambio en La Guajira</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm animate-slide-up">
-              {error}
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
-              <input
-                name="first_name"
-                type="text"
-                placeholder="Tu nombre"
-                className="input-field"
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Apellido</label>
-              <input
-                name="last_name"
-                type="text"
-                placeholder="Tu apellido"
-                className="input-field"
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
-            <input
-              name="username"
-              type="text"
-              placeholder="Elige un nombre de usuario"
-              className="input-field"
-              onChange={handleChange}
-              required
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
-            <input
-              name="email"
-              type="email"
-              placeholder="tu@email.com"
-              className="input-field"
-              onChange={handleChange}
-              required
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
-            <div className="relative">
-              <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Crea una contraseña segura"
-                className="input-field pr-12"
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 hover:text-green-500 cursor-pointer transition-colors duration-200 p-2 rounded-full hover:bg-green-50"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={isLoading}
-                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="btn-primary w-full flex items-center justify-center space-x-2"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <div className="loading-spinner"></div>
-                <span>Creando cuenta...</span>
-              </>
-            ) : (
-              <span>Registrar</span>
-            )}
-          </button>
-        </form>
-
-        <div className="mt-8 text-center space-y-4">
-          <p className="text-sm text-gray-600">
-            ¿Ya tienes una cuenta?{" "}
-            <Link
-              to="/login"
-              className="text-green-600 hover:text-green-500 font-semibold hover:underline transition-colors duration-200"
-            >
-              Inicia sesión
-            </Link>
-          </p>
-
-          <div className="pt-4 border-t border-gray-200">
-            <Link
-              to="/"
-              className="text-green-700 hover:text-green-600 font-medium text-sm hover:underline transition-colors duration-200 flex items-center justify-center space-x-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Conocer más sobre la fundación</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Indicador de seguridad */}
-        <div className="mt-6 flex items-center justify-center space-x-2 text-xs text-gray-500">
-          <Shield size={12} className="text-green-500" />
-          <span>Tus datos están protegidos</span>
-        </div>
-      </div>
+        </p>
+      </form>
     </div>
-  )
+  );
 }

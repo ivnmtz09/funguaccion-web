@@ -1,10 +1,12 @@
 from rest_framework.routers import DefaultRouter
-from .views import DocumentViewSet, PostViewSet, CategoryViewSet, SuggestionViewSet
+from django.urls import path, include
+from .views import ProjectViewSet, DonationViewSet, ActivityReportViewSet
 
 router = DefaultRouter()
-router.register(r'documents', DocumentViewSet, basename='documents')
-router.register(r'posts', PostViewSet, basename='posts')
-router.register(r'categories', CategoryViewSet, basename='categories')
-router.register(r'suggestions', SuggestionViewSet, basename='suggestions')
+router.register(r'projects', ProjectViewSet, basename='projects')
+router.register(r'donations', DonationViewSet, basename='donations')
+router.register(r'reports', ActivityReportViewSet, basename='activity-reports')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+]

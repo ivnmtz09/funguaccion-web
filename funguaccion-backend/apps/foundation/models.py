@@ -1,45 +1,45 @@
 from django.db import models
+from apps.users.models import CustomUser
 
-class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True)
+class Project(models.Model):
+    STATUS_CHOICES = [
+        ("planning", "En planificación"),
+        ("active", "Activo"),
+        ("completed", "Completado"),
+        ("cancelled", "Cancelado"),
+    ]
 
-    def __str__(self):
-        return self.name
-
-class Document(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=150)
     description = models.TextField()
-    file = models.FileField(upload_to='documents/')
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    coordinator = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name="projects_coordinated")
+    volunteers = models.ManyToManyField(CustomUser, related_name="projects_participated", blank=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="planning")
+    budget = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-class Post(models.Model):
-    CATEGORY_CHOICES = [
-        ("news", "Noticia"),
-        ("blog", "Blog"),
-        ("event", "Evento"),
-    ]
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    content = models.TextField()
-    author = models.ForeignKey("users.CustomUser", on_delete=models.CASCADE, related_name="posts")
-    cover = models.ImageField(upload_to="posts/", blank=True, null=True)
-    status = models.CharField(max_length=20, choices=[("draft", "Borrador"), ("published", "Publicado")], default="draft")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="posts")
+
+class Donation(models.Model):
+    donor = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="donations")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField(auto_now_add=True)
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.title} ({self.category})"
-        
-class Suggestion(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+        return f"Donación de {self.amount} a {self.project.title}"
+
+
+class ActivityReport(models.Model):
+    volunteer = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)
+    hours = models.DecimalField(max_digits=4, decimal_places=2)
 
     def __str__(self):
-        return f"Sugerencia de {self.name}"
+        return f"Reporte de {self.volunteer} en {self.project}"

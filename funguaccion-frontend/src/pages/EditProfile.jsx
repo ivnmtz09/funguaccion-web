@@ -4,8 +4,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ArrowLeft, User, Save, Camera } from "lucide-react"
 import useAuth from "../context/useAuth.jsx"
-import api from "../api.js"
-import { API_BASE } from "../api.js"
+import api from "../utils/api.js"
 import logo from "../assets/logo.png"
 import Avatar from "../components/Avatar.jsx"
 
@@ -85,7 +84,7 @@ export default function EditProfile() {
   const avatarUrl = preview || (user?.profile_image?.startsWith("http")
   ? user.profile_image
   : user?.profile_image
-    ? `${API_BASE}${user.profile_image}`
+    ? `${api}${user.profile_image}`
     : null);
 
   const handleChange = (e) => {

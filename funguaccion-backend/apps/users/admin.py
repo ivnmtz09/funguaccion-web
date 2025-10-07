@@ -2,36 +2,35 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Role
 
+
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    list_display = ('id', 'email', 'first_name', 'last_name', 'get_roles', 'is_staff')
+    list_filter = ('roles', 'is_staff', 'is_superuser')
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('id',)
+    filter_horizontal = ('roles',)
+
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Información personal', {'fields': ('first_name', 'last_name', 'telefono', 'ubicacion', 'biografia', 'intereses', 'profile_image')}),
+        ('Roles y permisos', {'fields': ('roles', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Fechas importantes', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_superuser'),
+        }),
+    )
 
     def get_roles(self, obj):
         return ", ".join([r.title for r in obj.roles.all()])
     get_roles.short_description = "Roles"
 
-    model = CustomUser
-    list_display = ('id', 'username', 'first_name', 'last_name', 'email', 'get_roles', 'is_staff')
-    list_filter = ('roles', 'is_staff', 'is_superuser')
-    filter_horizontal = ('roles',)
-    search_fields = ('username', 'email')
-    ordering = ('id',)
 
-    fieldsets = UserAdmin.fieldsets + (
-        ('Información adicional', {
-            'fields': ('telefono', 'ubicacion', 'biografia', 'intereses', 'profile_image'),
-        }),
-        ('Roles de usuario', {
-            'fields': ('roles',),
-        }),
-    )
-
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Información adicional', {
-            'fields': ('telefono', 'ubicacion', 'biografia', 'intereses', 'profile_image'),
-        }),
-        ('Roles de usuario', {
-            'fields': ('roles',),
-        }),
-    )
-
-admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Role)
+@admin.register(Role)
+class RoleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'title', 'description')
+    search_fields = ('name', 'title')

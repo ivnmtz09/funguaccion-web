@@ -49,12 +49,6 @@ export default function Navigation({ currentPage = "" }) {
     { name: "inicio", path: "/", label: "Inicio", icon: <div className="w-2 h-2 bg-green-600 rounded-full"></div> },
     { name: "nosotros", path: "/nosotros", label: "Nosotros", icon: <Users className="w-4 h-4 text-green-600" /> },
     { name: "programas", path: "/programas", label: "Programas", icon: <Target className="w-4 h-4 text-green-600" /> },
-    {
-      name: "posts",
-      path: "/posts",
-      label: "Noticias",
-      icon: <div className="w-2 h-2 bg-blue-600 rounded-full"></div>,
-    },
     { name: "contacto", path: "/contacto", label: "Contacto", icon: <Mail className="w-4 h-4 text-green-600" /> },
   ]
 
@@ -89,7 +83,6 @@ export default function Navigation({ currentPage = "" }) {
               <div className="flex items-center space-x-4">
                 <button className="p-2 rounded-lg hover:bg-green-50 transition-colors duration-200 relative">
                   <Bell size={20} className="text-green-700" />
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
                 </button>
                 <Link to="/me" className="btn-primary flex items-center space-x-2">
                   <User size={16} />
