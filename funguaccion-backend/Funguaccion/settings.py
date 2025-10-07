@@ -10,11 +10,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR.parent, '.env'))
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "https://funguaccion.netlify.app/",
     "10.105.6.149",  # IP anterior
     "192.168.1.4",   # IP actual
     "192.168.1.254"  # Gateway (opcional)
@@ -175,6 +176,8 @@ USE_TZ = True
 # =========================================================
 # STATIC / MEDIA FILES
 # =========================================================
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
