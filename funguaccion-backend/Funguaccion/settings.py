@@ -16,6 +16,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "https://funguaccion.netlify.app/",
+    "funguaccion-web.onrender.com",
     "10.105.6.149",  # IP anterior
     "192.168.1.4",   # IP actual
     "192.168.1.254"  # Gateway (opcional)
